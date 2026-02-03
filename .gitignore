@@ -4,22 +4,22 @@ node_modules/
 coverage/
 .idea/
 run/
-logs/
 .DS_Store
 .vscode
 *.swp
 *.lock
-*.js
 .eslintcache
 
-app/**/*.js
-test/**/*.js
-config/**/*.js
-app/**/*.map
-test/**/*.map
-config/**/*.map
-.package-lock.json
-.egg/
+# Build output
+dist/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Temporary files
+tmp/
 
 # Assets module
 uploads/
@@ -27,3 +27,7 @@ uploads/
 *.db-shm
 *.db-wal
 data/
+
+# Test
+*.test.ts
+*.spec.ts

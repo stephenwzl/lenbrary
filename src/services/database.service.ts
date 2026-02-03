@@ -1,35 +1,22 @@
-import { SingletonProto, AccessLevel, Inject, type Logger } from 'egg';
-import Database from 'better-sqlite3';
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
-import type { Asset, ExifData, CreateExifData } from '../schema/AssetsSchema';
+import db from '../utils/database';
+import type { Asset, ExifData, CreateExifData } from '../types/assets.types';
+// import logger from '../middleware/logger';
 
-@SingletonProto({
-  accessLevel: AccessLevel.PUBLIC,
-})
-export class DatabaseService {
-  @Inject()
-  private logger: Logger;
+class DatabaseService {
+  private static instance: DatabaseService;
 
-  private db: Database.Database;
+  private constructor() {}
 
-  constructor() {
-    // 初始化数据库连接
-    this.db = new Database('data/assets.db');
-    this.db.pragma('journal_mode = WAL');
-    this.initTables();
-  }
-
-  private initTables() {
-    const schemaPath = join(__dirname, '../db/schema.sql');
-    const schema = readFileSync(schemaPath, 'utf-8');
-    this.db.exec(schema);
-    this.logger.info('[DatabaseService] Tables initialized successfully');
+  static getInstance(): DatabaseService {
+    if (!DatabaseService.instance) {
+      DatabaseService.instance = new DatabaseService();
+    }
+    return DatabaseService.instance;
   }
 
   // Asset operations
   createAsset(asset: Omit<Asset, 'id'>): Asset {
-    const stmt = this.db.prepare(`
+    const stmt = db.prepare(`
       INSERT INTO assets (
         original_name, stored_name, file_path, thumbnail_path,
         mime_type, file_type, file_size, width, height, created_at
@@ -57,7 +44,7 @@ export class DatabaseService {
   }
 
   getAssetById(id: number): Asset | undefined {
-    const stmt = this.db.prepare('SELECT * FROM assets WHERE id = ?');
+    const stmt = db.prepare('SELECT * FROM assets WHERE id = ?');
     return stmt.get(id) as Asset | undefined;
   }
 
@@ -73,19 +60,19 @@ export class DatabaseService {
     sql += ' ORDER BY created_at DESC LIMIT ? OFFSET ?';
     params.push(limit, offset);
 
-    const stmt = this.db.prepare(sql);
+    const stmt = db.prepare(sql);
     return stmt.all(...params) as Asset[];
   }
 
   deleteAsset(id: number): boolean {
-    const stmt = this.db.prepare('DELETE FROM assets WHERE id = ?');
+    const stmt = db.prepare('DELETE FROM assets WHERE id = ?');
     const result = stmt.run(id);
     return result.changes > 0;
   }
 
   // Exif operations
   createExif(exif: CreateExifData): ExifData {
-    const stmt = this.db.prepare(`
+    const stmt = db.prepare(`
       INSERT INTO asset_exif (
         asset_id, make, model, datetime, exposure_time, f_number,
         iso, focal_length, lens_make, lens_model, orientation,
@@ -120,7 +107,7 @@ export class DatabaseService {
   }
 
   getExifByAssetId(assetId: number): ExifData | undefined {
-    const stmt = this.db.prepare('SELECT * FROM asset_exif WHERE asset_id = ?');
+    const stmt = db.prepare('SELECT * FROM asset_exif WHERE asset_id = ?');
     return stmt.get(assetId) as ExifData | undefined;
   }
 
@@ -140,18 +127,20 @@ export class DatabaseService {
     if (fields.length === 0) return false;
 
     const sql = `UPDATE asset_exif SET ${fields.join(', ')} WHERE asset_id = ?`;
-    const stmt = this.db.prepare(sql);
+    const stmt = db.prepare(sql);
     const result = stmt.run(...params);
     return result.changes > 0;
   }
 
   deleteExif(assetId: number): boolean {
-    const stmt = this.db.prepare('DELETE FROM asset_exif WHERE asset_id = ?');
+    const stmt = db.prepare('DELETE FROM asset_exif WHERE asset_id = ?');
     const result = stmt.run(assetId);
     return result.changes > 0;
   }
 
-  close() {
-    this.db.close();
+  close(): void {
+    db.close();
   }
 }
+
+export default DatabaseService;

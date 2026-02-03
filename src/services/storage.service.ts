@@ -1,7 +1,8 @@
-import { SingletonProto, AccessLevel, Inject, type Logger, type Application } from 'egg';
 import { mkdirSync, readFileSync, writeFileSync, unlinkSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { v4 as uuidv4 } from 'uuid';
+import { appConfig } from '../config/index';
+import logger from '../middleware/logger';
 
 interface UploadResult {
   storedName: string;
@@ -9,56 +10,57 @@ interface UploadResult {
   originalPath: string;
 }
 
-@SingletonProto({
-  accessLevel: AccessLevel.PUBLIC,
-})
-export class StorageService {
-  @Inject()
-  private logger: Logger;
+class StorageService {
+  private static instance: StorageService;
 
-  @Inject()
-  private app: Application;
+  private constructor() {}
 
-  private get uploadDir() {
-    return this.app.config.assets.uploadDir;
+  static getInstance(): StorageService {
+    if (!StorageService.instance) {
+      StorageService.instance = new StorageService();
+    }
+    return StorageService.instance;
   }
 
-  private get originalDir() {
+  private get uploadDir(): string {
+    return appConfig.upload.dir;
+  }
+
+  private get originalDir(): string {
     return join(this.uploadDir, 'original');
   }
 
-  private get thumbnailDir() {
+  private get thumbnailDir(): string {
     return join(this.uploadDir, 'thumbnails');
   }
 
-  ensureDir() {
-    [this.uploadDir, this.originalDir, this.thumbnailDir].forEach(dir => {
-      if (!existsSync(dir)) {
-        mkdirSync(dir, { recursive: true });
-      }
-    });
+  private ensureDir(dir: string): void {
+    if (!existsSync(dir)) {
+      mkdirSync(dir, { recursive: true });
+    }
+  }
+
+  ensureDirs(): void {
+    this.ensureDir(this.uploadDir);
+    this.ensureDir(this.originalDir);
+    this.ensureDir(this.thumbnailDir);
   }
 
   uploadFile(file: any): UploadResult {
-    this.ensureDir();
+    this.ensureDirs();
 
     const date = new Date();
     const datePath = `${date.getFullYear()}/${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')}`;
     const dir = join(this.originalDir, datePath);
 
-    if (!existsSync(dir)) {
-      mkdirSync(dir, { recursive: true });
-    }
+    this.ensureDir(dir);
 
     const storedName = `${uuidv4()}${this.getExtension(file.originalname)}`;
     const filePath = join(dir, storedName);
 
-    // 移动文件到目标位置
     const buffer = readFileSync(file.filepath);
-    // 注意: Egg 的 multipart 模式会把文件存到临时目录，我们需要把文件 move 过去
-    // 这里简化处理，直接把临时文件的内容写入目标路径
     writeFileSync(filePath, buffer);
-    this.logger.info('[StorageService] File uploaded: %s', filePath);
+    logger.info('[StorageService] File uploaded', { filePath });
 
     return {
       storedName,
@@ -71,11 +73,11 @@ export class StorageService {
     try {
       if (existsSync(filePath)) {
         unlinkSync(filePath);
-        this.logger.info('[StorageService] File deleted: %s', filePath);
+        logger.info('[StorageService] File deleted', { filePath });
         return true;
       }
     } catch (error) {
-      this.logger.error('[StorageService] Failed to delete file: %s', error);
+      logger.error('[StorageService] Failed to delete file', { error, filePath });
     }
     return false;
   }
@@ -85,9 +87,7 @@ export class StorageService {
     const datePath = `${date.getFullYear()}/${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')}`;
     const dir = join(this.thumbnailDir, datePath);
 
-    if (!existsSync(dir)) {
-      mkdirSync(dir, { recursive: true });
-    }
+    this.ensureDir(dir);
 
     return join(dir, `${assetId}${ext}`);
   }
@@ -97,3 +97,5 @@ export class StorageService {
     return lastDotIndex !== -1 ? filename.substring(lastDotIndex) : '';
   }
 }
+
+export default StorageService;
