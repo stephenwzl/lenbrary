@@ -78,38 +78,41 @@ class DatabaseService {
 
   // Exif operations
   createExif(exif: CreateExifData): ExifData {
-    const stmt = db.prepare(`
-      INSERT INTO asset_exif (
-        asset_id, make, model, datetime, exposure_time, f_number,
-        iso, focal_length, lens_make, lens_model, orientation,
-        gps_latitude, gps_longitude, software, color_space, raw_exif
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `);
+    try {
+      // 使用更简洁的方式插入数据
+      const columns = Object.keys(exif).filter(key => key !== 'id');
+      const placeholders = columns.map(() => '?').join(', ');
+      const values = columns.map(col => {
+        const val = (exif as any)[col];
+        return val !== undefined && val !== null && val !== '' ? val : null;
+      });
 
-    stmt.run(
-      exif.asset_id,
-      exif.make || null,
-      exif.model || null,
-      exif.datetime || null,
-      exif.exposure_time || null,
-      exif.f_number || null,
-      exif.iso || null,
-      exif.focal_length || null,
-      exif.lens_make || null,
-      exif.lens_model || null,
-      exif.orientation || null,
-      exif.gps_latitude || null,
-      exif.gps_longitude || null,
-      exif.software || null,
-      exif.color_space || null,
-      exif.raw_exif || null
-    );
+      const sql = `INSERT INTO asset_exif (${columns.join(', ')}) VALUES (${placeholders})`;
+      
+      const stmt = db.prepare(sql);
+      stmt.run(...values);
 
-    const createdExif = this.getExifByAssetId(exif.asset_id);
-    if (!createdExif) {
-      throw new Error('Failed to create EXIF');
+      const createdExif = this.getExifByAssetId(exif.asset_id);
+      if (!createdExif) {
+        throw new Error('Failed to create EXIF');
+      }
+      return createdExif;
+    } catch (error) {
+      const err = error as any;
+      console.error('[DatabaseService] createExif error details:', {
+        message: err.message,
+        code: err.code,
+        assetId: exif.asset_id,
+        sampleFields: {
+          make: exif.make,
+          model: exif.model,
+          datetime: exif.datetime,
+          exif_version: exif.exif_version,
+          serial_number: exif.serial_number,
+        }
+      });
+      throw err;
     }
-    return createdExif;
   }
 
   getExifByAssetId(assetId: number): ExifData | undefined {

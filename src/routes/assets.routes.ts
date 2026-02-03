@@ -230,11 +230,26 @@ router.post('/upload', upload.single('file'), async (req: Request, res: Response
           createdAsset.id,
         );
         if (exifData) {
+          logger.debug('[AssetController] EXIF data extracted, inserting into database', {
+            assetId: createdAsset.id,
+            sampleData: {
+              make: exifData.make,
+              model: exifData.model,
+              datetime: exifData.datetime,
+              exifVersion: exifData.exif_version,
+              filmMode: exifData.film_mode,
+            }
+          });
           databaseService.createExif(exifData);
           exif = databaseService.getExifByAssetId(createdAsset.id);
         }
       } catch (exifError) {
-        logger.warn('[AssetController] Failed to extract EXIF', { error: exifError });
+        logger.warn('[AssetController] Failed to extract EXIF', { 
+          error: exifError,
+          errorMessage: (exifError as any)?.message,
+          errorCode: (exifError as any)?.code,
+          errorStack: (exifError as any)?.stack,
+        });
       }
     }
 
