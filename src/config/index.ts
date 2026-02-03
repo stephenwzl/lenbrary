@@ -17,6 +17,10 @@ export interface AppConfig {
     schemaPath: string;
     migrationsDir: string;
   };
+  cors: {
+    origin: string;
+    credentials: boolean;
+  };
 }
 
 export const appConfig: AppConfig = {
@@ -33,5 +37,9 @@ export const appConfig: AppConfig = {
     path: process.env.DB_PATH || './data/assets.db',
     schemaPath: './src/config/schema.sql',
     migrationsDir: './src/migrations',
+  },
+  cors: {
+    origin: process.env.CORS_ORIGIN || '*',
+    credentials: process.env.CORS_CREDENTIALS === 'true',
   },
 };

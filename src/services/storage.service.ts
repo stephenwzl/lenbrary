@@ -47,25 +47,28 @@ class StorageService {
   }
 
   uploadFile(file: any): UploadResult {
+    logger.debug('[StorageService] uploadFile called', { fileKey: file?.path || 'undefined', originalname: file?.originalname });
     this.ensureDirs();
 
     const date = new Date();
     const datePath = `${date.getFullYear()}/${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')}`;
     const dir = join(this.originalDir, datePath);
+    logger.debug('[StorageService] Creating directory', { dir });
 
     this.ensureDir(dir);
 
     const storedName = `${uuidv4()}${this.getExtension(file.originalname)}`;
     const filePath = join(dir, storedName);
+    logger.debug('[StorageService] Generated file info', { storedName, filePath, sourceFile: file.path });
 
-    const buffer = readFileSync(file.filepath);
+    const buffer = readFileSync(file.path);
     writeFileSync(filePath, buffer);
-    logger.info('[StorageService] File uploaded', { filePath });
+    logger.info('[StorageService] File uploaded', { filePath, originalName: file.originalname });
 
     return {
       storedName,
       filePath,
-      originalPath: file.filepath,
+      originalPath: file.path,
     };
   }
 
