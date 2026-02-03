@@ -1,0 +1,6 @@
+{
+  "name": "assets-module",
+  "version": "1.0.0",
+  "description": "Assets management module for lenbrary-server",
+  "main": "index.ts"
+}

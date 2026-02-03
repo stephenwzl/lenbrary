@@ -1,0 +1,61 @@
+{
+  "name": "lenbrary-server",
+  "private": true,
+  "description": "Hello Egg.js",
+  "homepage": "https://github.com/YOUR_USERNAME/YOUR_REPO#readme",
+  "bugs": {
+    "url": "https://github.com/YOUR_USERNAME/YOUR_REPO/issues"
+  },
+  "license": "MIT",
+  "author": "Author Name <author.name@mail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YOUR_USERNAME/YOUR_REPO.git"
+  },
+  "type": "module",
+  "scripts": {
+    "start": "eggctl start --daemon --title=egg-server-lenbrary-server",
+    "stop": "eggctl stop --title=egg-server-lenbrary-server",
+    "predev": "npm run clean",
+    "dev": "egg-bin dev",
+    "test:local": "cross-env NODE_OPTIONS=\"--import @oxc-node/core/register\" vitest run",
+    "pretest": "npm run clean && npm run lint -- --fix",
+    "test": "npm run test:local",
+    "preci": "npm run clean && npm run lint",
+    "ci": "npm run test:local -- --coverage",
+    "postci": "npm run prepublishOnly && npm start && sleep 10 && npm stop && npm run clean",
+    "lint": "oxlint --type-aware",
+    "typecheck": "tsgo --noEmit",
+    "build": "tsc",
+    "clean": "tsc -b --clean",
+    "prepublishOnly": "npm run clean && npm run build"
+  },
+  "dependencies": {
+    "@eggjs/scripts": "beta",
+    "@eggjs/tracer": "beta",
+    "better-sqlite3": "^12.6.2",
+    "egg": "beta",
+    "file-type": "^21.3.0",
+    "sharp": "^0.34.5",
+    "uuid": "^13.0.0"
+  },
+  "devDependencies": {
+    "@eggjs/bin": "beta",
+    "@eggjs/mock": "beta",
+    "@eggjs/tsconfig": "beta",
+    "@oxc-node/core": "^0.0.35",
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "24",
+    "@types/uuid": "^10.0.0",
+    "@vitest/coverage-v8": "4",
+    "cross-env": "10",
+    "oxlint": "1",
+    "oxlint-tsgolint": "^0.10.0",
+    "typescript": "5",
+    "vitest": "4"
+  },
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "packageManager": "npm@10.9.4"
+}
