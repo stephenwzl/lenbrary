@@ -9,6 +9,7 @@ export interface Asset {
   file_size: number;
   width?: number;
   height?: number;
+  file_hash?: string;
   created_at: number;
 }
 

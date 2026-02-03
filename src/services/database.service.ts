@@ -19,8 +19,8 @@ class DatabaseService {
     const stmt = db.prepare(`
       INSERT INTO assets (
         original_name, stored_name, file_path, thumbnail_path,
-        mime_type, file_type, file_size, width, height, created_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        mime_type, file_type, file_size, width, height, file_hash, created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
     const result = stmt.run(
@@ -33,6 +33,7 @@ class DatabaseService {
       asset.file_size,
       asset.width || null,
       asset.height || null,
+      asset.file_hash || null,
       asset.created_at
     );
 
@@ -46,6 +47,11 @@ class DatabaseService {
   getAssetById(id: number): Asset | undefined {
     const stmt = db.prepare('SELECT * FROM assets WHERE id = ?');
     return stmt.get(id) as Asset | undefined;
+  }
+
+  getAssetByHash(hash: string): Asset | undefined {
+    const stmt = db.prepare('SELECT * FROM assets WHERE file_hash = ?');
+    return stmt.get(hash) as Asset | undefined;
   }
 
   getAssets(limit: number = 20, offset: number = 0, type?: string): Asset[] {

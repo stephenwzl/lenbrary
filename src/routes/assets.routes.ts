@@ -8,6 +8,7 @@ import { upload } from '../middleware/upload';
 import logger from '../middleware/logger';
 import { NotFoundError, BadRequestError, InternalServerError } from '../middleware/error-handler';
 import { existsSync, createReadStream, unlinkSync } from 'node:fs';
+import { calculateBufferHashAsync } from '../utils/hash';
 
 const router = Router();
 const databaseService = DatabaseService.getInstance();
@@ -30,7 +31,7 @@ interface MulterFile {
  * /api/assets/upload:
  *   post:
  *     summary: 上传文件
- *     description: 上传图片或视频文件，自动生成缩略图并提取 EXIF 信息
+ *     description: 上传图片或视频文件，自动生成缩略图并提取 EXIF 信息。如果文件已存在（基于 SHA-256 hash），则返回现有记录而不重复上传
  *     tags: [Assets]
  *     requestBody:
  *       required: true
@@ -46,6 +47,29 @@ interface MulterFile {
  *                 format: binary
  *                 description: 要上传的文件(支持图片或视频)
  *     responses:
+ *       200:
+ *         description: 文件已存在，返回现有记录
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 duplicate:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: File already exists
+ *                 data:
+ *                   allOf:
+ *                     - $ref: '#/components/schemas/Asset'
+ *                     - type: object
+ *                       properties:
+ *                         exif:
+ *                           $ref: '#/components/schemas/ExifData'
  *       201:
  *         description: 文件上传成功
  *         content:
@@ -96,6 +120,41 @@ router.post('/upload', upload.single('file'), async (req: Request, res: Response
     logger.debug('[AssetController] Reading file from path', { path: file.path });
     const buffer = await import('node:fs').then(fs => fs.readFileSync(file.path));
     logger.debug('[AssetController] File buffer read successfully', { bufferSize: buffer.length });
+    
+    // Calculate SHA-256 hash for deduplication
+    const fileHash = await calculateBufferHashAsync(buffer);
+    logger.debug('[AssetController] File hash calculated', { hash: fileHash });
+
+    // Check if file with same hash already exists
+    const existingAsset = databaseService.getAssetByHash(fileHash);
+    if (existingAsset) {
+      logger.info('[AssetController] Duplicate file detected, returning existing asset', {
+        hash: fileHash,
+        existingAssetId: existingAsset.id,
+        originalName: file.originalname,
+      });
+      
+      // Clean up temp file
+      unlinkSync(file.path);
+      
+      // Return existing asset with EXIF data if available
+      let exif: ExifData | undefined;
+      if (existingAsset.file_type === 'image') {
+        exif = databaseService.getExifByAssetId(existingAsset.id!);
+      }
+      
+      // Return 200 with existing asset information
+      res.status(200).json({
+        success: true,
+        duplicate: true,
+        message: 'File already exists',
+        data: {
+          ...existingAsset,
+          exif,
+        },
+      });
+      return;
+    }
     
     const type = await fileTypeFromBuffer(buffer);
     logger.debug('[AssetController] File type detected', { type });
@@ -158,6 +217,7 @@ router.post('/upload', upload.single('file'), async (req: Request, res: Response
       file_size: file.size,
       width,
       height,
+      file_hash: fileHash,
       created_at: Date.now(),
     };
 
