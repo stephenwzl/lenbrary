@@ -23,7 +23,14 @@
     "typecheck": "tsc",
     "build": "tsc",
     "clean": "tsc -b --clean && rimraf dist",
-    "prepublishOnly": "npm run clean && npm run build"
+    "prepublishOnly": "npm run clean && npm run build",
+    "migrate": "tsx bin/migrate.ts",
+    "migration": "tsx bin/migrate.ts",
+    "migrate:status": "tsx bin/migrate.ts status",
+    "migrate:up": "tsx bin/migrate.ts up",
+    "migrate:down": "tsx bin/migrate.ts down",
+    "migrate:info": "tsx bin/migrate.ts info",
+    "migrate:create": "tsx bin/migrate.ts create"
   },
   "dependencies": {
     "better-sqlite3": "^11.8.1",

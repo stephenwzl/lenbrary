@@ -15,6 +15,7 @@ export interface AppConfig {
   database: {
     path: string;
     schemaPath: string;
+    migrationsDir: string;
   };
 }
 
@@ -31,5 +32,6 @@ export const appConfig: AppConfig = {
   database: {
     path: process.env.DB_PATH || './data/assets.db',
     schemaPath: './src/config/schema.sql',
+    migrationsDir: './src/migrations',
   },
 };
