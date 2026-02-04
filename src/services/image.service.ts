@@ -60,6 +60,7 @@ interface ExtractedExifData {
   // === 拍摄参数 ===
   exposure_program?: string;
   exposure_compensation?: number;
+  exposure_mode?: string;
   metering_mode?: string;
   light_source?: string;
   flash?: string;
@@ -230,7 +231,7 @@ class ImageService {
   async generateThumbnail(imagePath: string, thumbnailPath: string, size: number = 300): Promise<void> {
     try {
       await sharp(imagePath)
-        .resize(size, size, { fit: 'cover', position: 'center' })
+        .resize(size, size, { fit: 'inside', withoutEnlargement: false })
         .jpeg({ quality: 85 })
         .toFile(thumbnailPath);
       logger.info('[ImageService] Thumbnail generated', { thumbnailPath });

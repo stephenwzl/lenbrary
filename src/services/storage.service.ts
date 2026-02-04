@@ -85,14 +85,14 @@ class StorageService {
     return false;
   }
 
-  getThumbnailPath(assetId: number, ext: string): string {
+  getThumbnailPath(assetName: string | number, ext: string): string {
     const date = new Date();
     const datePath = `${date.getFullYear()}/${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')}`;
     const dir = join(this.thumbnailDir, datePath);
 
     this.ensureDir(dir);
 
-    return join(dir, `${assetId}${ext}`);
+    return join(dir, `${assetName}${ext}`);
   }
 
   private getExtension(filename: string): string {

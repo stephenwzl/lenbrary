@@ -150,6 +150,66 @@ export interface AssetWithExif extends Asset {
   exif?: ExifData;
 }
 
+export interface VideoMetadata {
+  id?: number;
+  asset_id: number;
+  duration?: number;
+  video_codec?: string;
+  video_bitrate?: number;
+  audio_codec?: string;
+  audio_bitrate?: number;
+  audio_sample_rate?: number;
+  audio_channels?: number;
+  frame_rate?: number;
+  pixel_format?: string;
+  color_space?: string;
+  color_primaries?: string;
+  color_transfer?: string;
+  color_range?: string;
+  is_hdr?: number;
+  hdr_format?: string;
+  bit_depth?: number;
+  streams_video?: number;
+  streams_audio?: number;
+  streams_subtitle?: number;
+  total_bitrate?: number;
+  raw_metadata?: string;
+}
+
+export interface CreateVideoMetadata {
+  asset_id: number;
+  duration?: number;
+  video_codec?: string;
+  video_bitrate?: number;
+  audio_codec?: string;
+  audio_bitrate?: number;
+  audio_sample_rate?: number;
+  audio_channels?: number;
+  frame_rate?: number;
+  pixel_format?: string;
+  color_space?: string;
+  color_primaries?: string;
+  color_transfer?: string;
+  color_range?: string;
+  is_hdr?: number;
+  hdr_format?: string;
+  bit_depth?: number;
+  streams_video?: number;
+  streams_audio?: number;
+  streams_subtitle?: number;
+  total_bitrate?: number;
+  raw_metadata?: string;
+}
+
+export interface AssetWithVideoMetadata extends Asset {
+  videoMetadata?: VideoMetadata;
+}
+
+export interface AssetWithAllMetadata extends Asset {
+  exif?: ExifData;
+  videoMetadata?: VideoMetadata;
+}
+
 export interface CreateExifData {
   asset_id: number;
 

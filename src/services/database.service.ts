@@ -1,5 +1,5 @@
 import db from '../utils/database';
-import type { Asset, ExifData, CreateExifData } from '../types/assets.types';
+import type { Asset, ExifData, CreateExifData, VideoMetadata, CreateVideoMetadata } from '../types/assets.types';
 // import logger from '../middleware/logger';
 
 class DatabaseService {
@@ -143,6 +143,75 @@ class DatabaseService {
 
   deleteExif(assetId: number): boolean {
     const stmt = db.prepare('DELETE FROM asset_exif WHERE asset_id = ?');
+    const result = stmt.run(assetId);
+    return result.changes > 0;
+  }
+
+  // Video Metadata operations
+  createVideoMetadata(videoMetadata: CreateVideoMetadata): VideoMetadata {
+    try {
+      const columns = Object.keys(videoMetadata).filter(key => key !== 'id');
+      const placeholders = columns.map(() => '?').join(', ');
+      const values = columns.map(col => {
+        const val = (videoMetadata as any)[col];
+        return val !== undefined && val !== null && val !== '' ? val : null;
+      });
+
+      const sql = `INSERT INTO asset_video_metadata (${columns.join(', ')}) VALUES (${placeholders})`;
+
+      const stmt = db.prepare(sql);
+      stmt.run(...values);
+
+      const createdMetadata = this.getVideoMetadataByAssetId(videoMetadata.asset_id);
+      if (!createdMetadata) {
+        throw new Error('Failed to create video metadata');
+      }
+      return createdMetadata;
+    } catch (error) {
+      const err = error as any;
+      console.error('[DatabaseService] createVideoMetadata error details:', {
+        message: err.message,
+        code: err.code,
+        assetId: videoMetadata.asset_id,
+        sampleFields: {
+          duration: videoMetadata.duration,
+          video_codec: videoMetadata.video_codec,
+          is_hdr: videoMetadata.is_hdr,
+          hdr_format: videoMetadata.hdr_format,
+        }
+      });
+      throw err;
+    }
+  }
+
+  getVideoMetadataByAssetId(assetId: number): VideoMetadata | undefined {
+    const stmt = db.prepare('SELECT * FROM asset_video_metadata WHERE asset_id = ?');
+    return stmt.get(assetId) as VideoMetadata | undefined;
+  }
+
+  updateVideoMetadata(assetId: number, videoMetadata: Partial<CreateVideoMetadata>): boolean {
+    const fields: string[] = [];
+    const params: any[] = [];
+
+    Object.entries(videoMetadata).forEach(([key, value]) => {
+      if (key !== 'asset_id') {
+        fields.push(`${key} = ?`);
+        params.push(value);
+      }
+    });
+
+    params.push(assetId);
+
+    if (fields.length === 0) return false;
+
+    const sql = `UPDATE asset_video_metadata SET ${fields.join(', ')} WHERE asset_id = ?`;
+    const stmt = db.prepare(sql);
+    const result = stmt.run(...params);
+    return result.changes > 0;
+  }
+
+  deleteVideoMetadata(assetId: number): boolean {
+    const stmt = db.prepare('DELETE FROM asset_video_metadata WHERE asset_id = ?');
     const result = stmt.run(assetId);
     return result.changes > 0;
   }

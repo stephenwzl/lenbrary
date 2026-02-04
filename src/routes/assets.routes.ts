@@ -1,9 +1,11 @@
 import { Router, Request, Response } from 'express';
 import { fileTypeFromBuffer } from 'file-type';
-import type { Asset, ExifData } from '../types/assets.types';
+import { v4 as uuidv4 } from 'uuid';
+import type { Asset, ExifData, VideoMetadata } from '../types/assets.types';
 import DatabaseService from '../services/database.service';
 import StorageService from '../services/storage.service';
 import ImageService from '../services/image.service';
+import VideoService from '../services/video.service';
 import { upload } from '../middleware/upload';
 import logger from '../middleware/logger';
 import { NotFoundError, BadRequestError, InternalServerError } from '../middleware/error-handler';
@@ -14,6 +16,7 @@ const router = Router();
 const databaseService = DatabaseService.getInstance();
 const storageService = StorageService.getInstance();
 const imageService = ImageService.getInstance();
+const videoService = VideoService.getInstance();
 
 interface MulterFile {
   fieldname: string;
@@ -136,13 +139,17 @@ router.post('/upload', upload.single('file'), async (req: Request, res: Response
       
       // Clean up temp file
       unlinkSync(file.path);
-      
-      // Return existing asset with EXIF data if available
+
+      // Return existing asset with metadata if available
       let exif: ExifData | undefined;
-      if (existingAsset.file_type === 'image') {
-        exif = databaseService.getExifByAssetId(existingAsset.id!);
+      let videoMetadata: VideoMetadata | undefined;
+
+      if (existingAsset.file_type === 'image' && existingAsset.id) {
+        exif = databaseService.getExifByAssetId(existingAsset.id);
+      } else if (existingAsset.file_type === 'video' && existingAsset.id) {
+        videoMetadata = databaseService.getVideoMetadataByAssetId(existingAsset.id);
       }
-      
+
       // Return 200 with existing asset information
       res.status(200).json({
         success: true,
@@ -151,6 +158,7 @@ router.post('/upload', upload.single('file'), async (req: Request, res: Response
         data: {
           ...existingAsset,
           exif,
+          videoMetadata,
         },
       });
       return;
@@ -178,14 +186,18 @@ router.post('/upload', upload.single('file'), async (req: Request, res: Response
 
     const fileType: 'image' | 'video' = type.mime.startsWith('image/') ? 'image' : 'video';
 
+    // 生成 UUID 作为缩略图文件名
+    const thumbnailUuid = uuidv4();
+
     let width: number | undefined;
     let height: number | undefined;
     let thumbnailPath: string | undefined;
     let exif: ExifData | undefined;
+    let videoMetadata: VideoMetadata | undefined;
 
     if (fileType === 'image') {
       const ext = type.ext ? `.${type.ext}` : '.jpg';
-      const thumbPath = storageService.getThumbnailPath(0, ext);
+      const thumbPath = storageService.getThumbnailPath(thumbnailUuid, ext);
 
       try {
         const processResult = await imageService.processImage(
@@ -204,6 +216,32 @@ router.post('/upload', upload.single('file'), async (req: Request, res: Response
         }
       } catch (processError) {
         logger.warn('[AssetController] Image processing failed', { error: processError });
+      }
+    } else if (fileType === 'video') {
+      // 视频处理：生成缩略图和提取元数据
+      try {
+        logger.debug('[AssetController] Processing video file', { filePath: uploadResult.filePath });
+
+        // 获取视频尺寸
+        const dimensions = await videoService.getVideoDimensions(uploadResult.filePath);
+        width = dimensions.width;
+        height = dimensions.height;
+
+        // 生成缩略图
+        const thumbPath = storageService.getThumbnailPath(thumbnailUuid, '.jpg');
+        thumbnailPath = await videoService.generateVideoThumbnail(
+          uploadResult.filePath,
+          thumbPath,
+          512,
+        );
+
+        logger.info('[AssetController] Video thumbnail generated', {
+          thumbnailPath,
+          width,
+          height,
+        });
+      } catch (videoProcessError) {
+        logger.warn('[AssetController] Video processing failed', { error: videoProcessError });
       }
     }
 
@@ -244,11 +282,46 @@ router.post('/upload', upload.single('file'), async (req: Request, res: Response
           exif = databaseService.getExifByAssetId(createdAsset.id);
         }
       } catch (exifError) {
-        logger.warn('[AssetController] Failed to extract EXIF', { 
+        logger.warn('[AssetController] Failed to extract EXIF', {
           error: exifError,
           errorMessage: (exifError as any)?.message,
           errorCode: (exifError as any)?.code,
           errorStack: (exifError as any)?.stack,
+        });
+      }
+    } else if (fileType === 'video' && createdAsset.id) {
+      // 提取视频元数据并入库
+      try {
+        logger.debug('[AssetController] Extracting video metadata', {
+          assetId: createdAsset.id,
+          filePath: uploadResult.filePath,
+        });
+
+        const extractedMetadata = await videoService.extractVideoMetadata(
+          uploadResult.filePath,
+          createdAsset.id,
+        );
+
+        if (extractedMetadata) {
+          logger.debug('[AssetController] Video metadata extracted, inserting into database', {
+            assetId: createdAsset.id,
+            sampleData: {
+              duration: extractedMetadata.duration,
+              video_codec: extractedMetadata.video_codec,
+              is_hdr: extractedMetadata.is_hdr,
+              hdr_format: extractedMetadata.hdr_format,
+              frame_rate: extractedMetadata.frame_rate,
+            }
+          });
+          databaseService.createVideoMetadata(extractedMetadata);
+          videoMetadata = databaseService.getVideoMetadataByAssetId(createdAsset.id);
+        }
+      } catch (videoMetadataError) {
+        logger.warn('[AssetController] Failed to extract video metadata', {
+          error: videoMetadataError,
+          errorMessage: (videoMetadataError as any)?.message,
+          errorCode: (videoMetadataError as any)?.code,
+          errorStack: (videoMetadataError as any)?.stack,
         });
       }
     }
@@ -258,6 +331,7 @@ router.post('/upload', upload.single('file'), async (req: Request, res: Response
       data: {
         ...createdAsset,
         exif,
+        videoMetadata,
       },
     });
   } catch (error) {
