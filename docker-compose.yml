@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  lenbrary-server:
+    build: .
+    container_name: lenbrary-server
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      # 数据持久化
+      - ./data:/app/data
+      - ./uploads:/app/uploads
+      - ./tmp:/app/tmp
+
+      # 环境变量配置（可选，也可以在下面的 env_file 中配置）
+      # - .env:/app/.env
+
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - UPLOAD_DIR=/app/uploads
+      - TEMP_DIR=/app/tmp
+      - THUMBNAIL_SIZE=512
+      - DB_PATH=/app/data/assets.db
+
+    # 可选：限制资源使用
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: '2'
+    #       memory: 2G
+    #     reservations:
+    #       cpus: '0.5'
+    #       memory: 512M
+
+    # 健康检查
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+    # 时区设置
+    environment:
+      - TZ=Asia/Shanghai
