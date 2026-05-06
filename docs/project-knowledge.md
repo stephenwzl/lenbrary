@@ -17,11 +17,11 @@
 
 Lenbrary is a personal media asset management product for photography and media-organization enthusiasts. The current implementation is a local or self-hosted server for image and video files, providing ingestion, storage, metadata extraction, thumbnail generation, duplicate detection, listing, retrieval, and deletion for media assets.
 
-The current repository provides the backend foundation for that personal product. It is not yet a complete end-user gallery application; the existing user interface is generated endpoint documentation and service endpoints, not a dedicated media browsing frontend.
+The current repository provides the backend foundation plus a lightweight browser UI for the first personal review loop. It is still not a hosted gallery or professional DAM product; the UI focuses on importing, browsing, filtering, inspecting, organizing lightly, reviewing health, and exporting a catalog from the same self-hosted server.
 
 ## Chosen MVP Next Step
 
-The chosen next step is to turn the backend foundation into a usable personal media library review loop. The first MVP slice should let an enthusiast import a mixed batch, browse visual previews, filter by basic media and metadata attributes, open asset details, access originals, and delete unwanted assets. This validates personal product value faster than adding team, sharing, SaaS, or professional DAM capabilities.
+The chosen next step is to turn the backend foundation into a usable personal media library review loop. The first MVP slice lets an enthusiast import a mixed batch, browse visual previews, filter by media and metadata attributes, clear active filters, load more results, open grouped asset details, access originals, edit favorites/tags, review health, export a catalog, and delete unwanted assets. This validates personal product value faster than adding team, sharing, SaaS, or professional DAM capabilities.
 
 After the review loop works, Lenbrary should add lightweight organization through favorites and free-form tags, followed by library health and a readable catalog/metadata export. The export helps users audit and plan portability, but it does not include original media files and is not a backup feature.
 
@@ -42,6 +42,7 @@ The primary audience is an individual photography or media asset management enth
 - **Local persistence**: Stores file records and metadata in a local database file and stores media files on the local filesystem.
 - **Migrations**: Includes ordered schema migrations for initial tables, indexes, file hashes, extended EXIF fields, and video metadata.
 - **Endpoint documentation**: Serves generated documentation for the available service endpoints.
+- **Lightweight media UI**: Serves a static liquid glass browser page with import queue feedback, active filters, incremental loading, asset cards, grouped detail, health severity, and export warnings.
 - **Container deployment**: Provides container and compose configuration for self-hosted operation.
 
 ## Vocabulary
@@ -86,6 +87,8 @@ The primary audience is an individual photography or media asset management enth
 - Treat the current product as a personal local/self-hosted product for photography and media asset management enthusiasts.
 - Treat authentication, sharing, backup, retention, and compliance as out of scope for the current baseline but high-priority decisions before broader exposure.
 - Treat generated thumbnails and extracted metadata as best-effort derived data; original assets and asset records are the core durable product value.
+- Keep the frontend as a static UI until user workflows prove the need for a separate frontend application.
+- Use liquid glass as a readable operational style, not as a reason to add marketing-page structure or reduce information density.
 
 ## Evidence Map
 

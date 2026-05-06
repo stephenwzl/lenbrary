@@ -20,9 +20,9 @@ The current product promise is a trustworthy personal media foundation: reliable
 
 ## MVP Direction
 
-The next MVP is a personal media library review loop for one enthusiast in a trusted private environment. The MVP starts with import, visual browsing, basic filtering, asset detail, original-file access, and confirmed deletion. This is the shortest path from the current backend foundation to a usable personal product.
+The next MVP is a personal media library review loop for one enthusiast in a trusted private environment. The MVP starts with import, visual browsing, richer filtering, active filter review, asset detail, original-file access, lightweight organization, health feedback, export guidance, and confirmed deletion. This is the shortest path from the current backend foundation to a usable personal product.
 
-The second increment adds lightweight organization with favorites and free-form tags. The third increment adds personal data confidence through library health and a readable summary export. The export is a catalog and metadata index for audit, migration planning, and backup planning; it does not include original media files and is not a backup/restore system.
+The second increment adds clearer mixed-import outcomes and per-file queue feedback. The third increment adds responsive liquid glass ergonomics: translucent operational panels, visible focus states, semantic health severity, readable mobile stacking, and safe destructive actions. The export is a catalog and metadata index for audit, migration planning, and backup planning; it does not include original media files and is not a backup/restore system.
 
 ## Value Proposition
 
@@ -49,6 +49,7 @@ The second increment adds lightweight organization with favorites and free-form 
 - **Asset removal**: Delete an asset and its associated stored files.
 - **Future personal organization**: Search, filter, tag, group, and review assets around personal collection needs.
 - **MVP review loop**: Import, browse, filter, inspect, organize lightly, check health, and export a catalog/metadata index.
+- **Enhanced frontend loop**: Use the page itself for pagination, active filter clearing, grouped metadata, import outcome review, health severity, and export warnings without reading endpoint documentation.
 
 ## Business Objectives
 
@@ -92,6 +93,7 @@ The second increment adds lightweight organization with favorites and free-form 
 - Public publishing or collaboration-first workflows.
 - Professional DAM features such as approval workflows, licensing, rights management, or client delivery portals.
 - Editing or destructive media transformation workflows.
+- Visual treatments that reduce workflow clarity, such as marketing-style landing pages replacing the operational media library surface.
 
 ## Roadmap Decision Criteria
 
