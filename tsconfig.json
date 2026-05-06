@@ -27,6 +27,7 @@
   "exclude": [
     "node_modules",
     "dist",
+    "src/ui",
     "**/*.test.ts",
     "**/*.spec.ts"
   ]

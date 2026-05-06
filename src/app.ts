@@ -1,5 +1,7 @@
 import express, { Express } from 'express';
 import cors from 'cors';
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 import { appConfig } from './config/index';
 import { requestLogger } from './middleware/request-logger';
 import { errorHandler, notFoundHandler } from './middleware/error-handler';
@@ -34,6 +36,11 @@ export function createApp(): Express {
       showRequestDuration: true,
     },
   }));
+
+  const uiPath = join(process.cwd(), 'src/ui');
+  if (existsSync(uiPath)) {
+    app.use('/', express.static(uiPath));
+  }
 
   app.use('/api', routes);
 

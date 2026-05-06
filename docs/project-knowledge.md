@@ -19,6 +19,12 @@ Lenbrary is a personal media asset management product for photography and media-
 
 The current repository provides the backend foundation for that personal product. It is not yet a complete end-user gallery application; the existing user interface is generated endpoint documentation and service endpoints, not a dedicated media browsing frontend.
 
+## Chosen MVP Next Step
+
+The chosen next step is to turn the backend foundation into a usable personal media library review loop. The first MVP slice should let an enthusiast import a mixed batch, browse visual previews, filter by basic media and metadata attributes, open asset details, access originals, and delete unwanted assets. This validates personal product value faster than adding team, sharing, SaaS, or professional DAM capabilities.
+
+After the review loop works, Lenbrary should add lightweight organization through favorites and free-form tags, followed by library health and a readable catalog/metadata export. The export helps users audit and plan portability, but it does not include original media files and is not a backup feature.
+
 ## Intended Audience
 
 The primary audience is an individual photography or media asset management enthusiast who wants to preserve, inspect, and organize a personal image/video collection with strong metadata awareness. Contributors and maintainers are secondary users who build and operate the product. Small teams, developer-platform use, and hosted multi-user scenarios are not the initial target.

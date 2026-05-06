@@ -1,5 +1,6 @@
 import db from '../utils/database';
 import type { Asset, ExifData, CreateExifData, VideoMetadata, CreateVideoMetadata } from '../types/assets.types';
+import type { ImportResult, LibraryFilters } from '../types/library.types';
 // import logger from '../middleware/logger';
 
 class DatabaseService {
@@ -70,10 +71,161 @@ class DatabaseService {
     return stmt.all(...params) as Asset[];
   }
 
+  getLibraryAssets(filters: LibraryFilters): Asset[] {
+    const params: any[] = [];
+    const where: string[] = [];
+    let sql = `
+      SELECT DISTINCT assets.* FROM assets
+      LEFT JOIN asset_exif ON asset_exif.asset_id = assets.id
+      LEFT JOIN asset_video_metadata ON asset_video_metadata.asset_id = assets.id
+      LEFT JOIN asset_favorites ON asset_favorites.asset_id = assets.id
+      LEFT JOIN asset_tags ON asset_tags.asset_id = assets.id
+    `;
+
+    if (filters.type) {
+      where.push('assets.file_type = ?');
+      params.push(filters.type);
+    }
+    if (typeof filters.favorite === 'boolean') {
+      where.push('COALESCE(asset_favorites.favorite, 0) = ?');
+      params.push(filters.favorite ? 1 : 0);
+    }
+    if (filters.tag) {
+      where.push('asset_tags.tag = ?');
+      params.push(filters.tag);
+    }
+    if (filters.dateFrom) {
+      where.push('assets.created_at >= ?');
+      params.push(filters.dateFrom);
+    }
+    if (filters.dateTo) {
+      where.push('assets.created_at <= ?');
+      params.push(filters.dateTo);
+    }
+    if (filters.camera) {
+      where.push('(asset_exif.make LIKE ? OR asset_exif.model LIKE ?)');
+      params.push(`%${filters.camera}%`, `%${filters.camera}%`);
+    }
+    if (typeof filters.hasThumbnail === 'boolean') {
+      where.push(filters.hasThumbnail ? 'assets.thumbnail_path IS NOT NULL' : 'assets.thumbnail_path IS NULL');
+    }
+    if (typeof filters.hasMetadata === 'boolean') {
+      where.push(filters.hasMetadata
+        ? '(asset_exif.asset_id IS NOT NULL OR asset_video_metadata.asset_id IS NOT NULL)'
+        : '(asset_exif.asset_id IS NULL AND asset_video_metadata.asset_id IS NULL)');
+    }
+
+    if (where.length > 0) {
+      sql += ` WHERE ${where.join(' AND ')}`;
+    }
+
+    sql += ' ORDER BY assets.created_at DESC LIMIT ? OFFSET ?';
+    params.push(filters.limit, filters.offset);
+
+    const stmt = db.prepare(sql);
+    return stmt.all(...params) as Asset[];
+  }
+
+  countLibraryAssets(filters: Omit<LibraryFilters, 'limit' | 'offset'>): number {
+    const assets = this.getLibraryAssets({ ...filters, limit: Number.MAX_SAFE_INTEGER, offset: 0 });
+    return assets.length;
+  }
+
   deleteAsset(id: number): boolean {
+    this.deleteLibraryStateForAsset(id);
     const stmt = db.prepare('DELETE FROM assets WHERE id = ?');
     const result = stmt.run(id);
     return result.changes > 0;
+  }
+
+  setFavorite(assetId: number, favorite: boolean): boolean {
+    const now = Date.now();
+    const stmt = db.prepare(`
+      INSERT INTO asset_favorites (asset_id, favorite, created_at, updated_at)
+      VALUES (?, ?, ?, ?)
+      ON CONFLICT(asset_id) DO UPDATE SET favorite = excluded.favorite, updated_at = excluded.updated_at
+    `);
+    const result = stmt.run(assetId, favorite ? 1 : 0, now, now);
+    return result.changes > 0;
+  }
+
+  getFavorite(assetId: number): boolean {
+    const stmt = db.prepare('SELECT favorite FROM asset_favorites WHERE asset_id = ?');
+    const row = stmt.get(assetId) as { favorite: number } | undefined;
+    return row?.favorite === 1;
+  }
+
+  replaceTags(assetId: number, tags: string[]): string[] {
+    const normalized = [...new Set(tags.map(tag => tag.trim()).filter(Boolean))];
+    const now = Date.now();
+    const deleteStmt = db.prepare('DELETE FROM asset_tags WHERE asset_id = ?');
+    const insertStmt = db.prepare(`
+      INSERT INTO asset_tags (asset_id, tag, created_at, updated_at)
+      VALUES (?, ?, ?, ?)
+    `);
+    const tx = db.transaction(() => {
+      deleteStmt.run(assetId);
+      normalized.forEach(tag => insertStmt.run(assetId, tag, now, now));
+    });
+    tx();
+    return normalized;
+  }
+
+  getTags(assetId: number): string[] {
+    const stmt = db.prepare('SELECT tag FROM asset_tags WHERE asset_id = ? ORDER BY tag ASC');
+    return (stmt.all(assetId) as Array<{ tag: string }>).map(row => row.tag);
+  }
+
+  deleteLibraryStateForAsset(assetId: number): void {
+    db.prepare('DELETE FROM asset_tags WHERE asset_id = ?').run(assetId);
+    db.prepare('DELETE FROM asset_favorites WHERE asset_id = ?').run(assetId);
+  }
+
+  recordImportEvent(result: ImportResult): void {
+    const stmt = db.prepare(`
+      INSERT INTO import_events (
+        input_name, status, asset_id, message, media_type,
+        metadata_available, thumbnail_available, created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+    stmt.run(
+      result.inputName,
+      result.status,
+      result.assetId || null,
+      result.message,
+      result.mediaType || null,
+      result.metadataAvailable ? 1 : 0,
+      result.thumbnailAvailable ? 1 : 0,
+      Date.now(),
+    );
+  }
+
+  countImportEventsByStatus(status: string): number {
+    const stmt = db.prepare('SELECT COUNT(*) as count FROM import_events WHERE status = ?');
+    return (stmt.get(status) as { count: number }).count;
+  }
+
+  countAssetsByType(type?: 'image' | 'video'): number {
+    const stmt = type
+      ? db.prepare('SELECT COUNT(*) as count FROM assets WHERE file_type = ?')
+      : db.prepare('SELECT COUNT(*) as count FROM assets');
+    const row = type ? stmt.get(type) : stmt.get();
+    return (row as { count: number }).count;
+  }
+
+  countAssetsMissingMetadata(): number {
+    const stmt = db.prepare(`
+      SELECT COUNT(*) as count FROM assets
+      LEFT JOIN asset_exif ON asset_exif.asset_id = assets.id
+      LEFT JOIN asset_video_metadata ON asset_video_metadata.asset_id = assets.id
+      WHERE asset_exif.asset_id IS NULL AND asset_video_metadata.asset_id IS NULL
+    `);
+    return (stmt.get() as { count: number }).count;
+  }
+
+  getAllAssetsForExport(): Asset[] {
+    const stmt = db.prepare('SELECT * FROM assets ORDER BY created_at DESC');
+    return stmt.all() as Asset[];
   }
 
   // Exif operations

@@ -1,5 +1,6 @@
 import { Router, Response } from 'express';
 import assetsRoutes from './assets.routes';
+import libraryRoutes from './library.routes';
 
 const router = Router();
 
@@ -37,5 +38,6 @@ router.get('/', (_req: any, res: Response) => {
 });
 
 router.use('/assets', assetsRoutes);
+router.use('/library', libraryRoutes);
 
 export default router;

@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { fileTypeFromBuffer } from 'file-type';
 import { v4 as uuidv4 } from 'uuid';
 import type { Asset, ExifData, VideoMetadata } from '../types/assets.types';
+import type { ImportResult } from '../types/library.types';
 import DatabaseService from '../services/database.service';
 import StorageService from '../services/storage.service';
 import ImageService from '../services/image.service';
@@ -155,6 +156,15 @@ router.post('/upload', upload.single('file'), async (req: Request, res: Response
         success: true,
         duplicate: true,
         message: 'File already exists',
+        importResult: {
+          inputName: file.originalname,
+          status: 'duplicate',
+          assetId: existingAsset.id,
+          message: 'Already in library',
+          mediaType: existingAsset.file_type,
+          metadataAvailable: Boolean(exif || videoMetadata),
+          thumbnailAvailable: Boolean(existingAsset.thumbnail_path),
+        },
         data: {
           ...existingAsset,
           exif,
@@ -326,14 +336,28 @@ router.post('/upload', upload.single('file'), async (req: Request, res: Response
       }
     }
 
-    res.status(201).json({
+    const importResult: ImportResult = {
+      inputName: file.originalname,
+      status: 'accepted',
+      assetId: createdAsset.id,
+      message: 'Imported',
+      mediaType: createdAsset.file_type,
+      metadataAvailable: Boolean(exif || videoMetadata),
+      thumbnailAvailable: Boolean(createdAsset.thumbnail_path),
+    };
+    const responseBody = {
       success: true,
+      importResult,
       data: {
         ...createdAsset,
         exif,
         videoMetadata,
       },
-    });
+    };
+    if (responseBody.importResult.assetId) {
+      databaseService.recordImportEvent(responseBody.importResult);
+    }
+    res.status(201).json(responseBody);
   } catch (error) {
     logger.error('[AssetController] Upload error - Details:', {
       error: error as any,

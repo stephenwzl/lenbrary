@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Lenbrary</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <main class="app">
+      <section class="toolbar">
+        <div>
+          <h1>Lenbrary</h1>
+          <p>Personal media library</p>
+        </div>
+        <div class="actions">
+          <button id="statusButton" type="button">Status</button>
+          <button id="exportButton" type="button">Export index</button>
+        </div>
+      </section>
+
+      <section class="import-panel">
+        <input id="fileInput" type="file" multiple accept="image/*,video/*">
+        <button id="importButton" type="button">Import</button>
+        <div id="importResults" class="results"></div>
+      </section>
+
+      <section class="filters">
+        <select id="typeFilter">
+          <option value="">All media</option>
+          <option value="image">Images</option>
+          <option value="video">Videos</option>
+        </select>
+        <input id="cameraFilter" type="search" placeholder="Camera">
+        <input id="tagFilter" type="search" placeholder="Tag">
+        <label><input id="favoriteFilter" type="checkbox"> Favorites</label>
+        <button id="refreshButton" type="button">Refresh</button>
+      </section>
+
+      <section class="workspace">
+        <div id="assetGrid" class="asset-grid"></div>
+        <aside id="detailPanel" class="detail-panel"></aside>
+      </section>
+
+      <section id="statusPanel" class="status-panel" hidden></section>
+    </main>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

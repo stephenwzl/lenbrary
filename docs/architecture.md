@@ -18,6 +18,8 @@ Lenbrary is currently implemented as a media asset web service backing a persona
 
 The system is organized around a small set of responsibilities that match the first personal-product needs: application assembly, request routing, upload handling, storage, media processing, persistence, migrations, logging, endpoint documentation, and containerized operation.
 
+The MVP architecture now adds a library layer on top of the existing asset service. Library endpoints expose user-facing asset views, filters, favorite/tag organization, health status, and a catalog/metadata export. A lightweight browser UI is served by the same application process to keep the first MVP deployable with the existing local/self-hosted server shape.
+
 ## Major Responsibilities
 
 - **Application assembly**: Configures JSON parsing, URL encoding, CORS, request logging, generated endpoint documentation, API routes, not-found handling, and error handling.
@@ -33,6 +35,7 @@ The system is organized around a small set of responsibilities that match the fi
 - **Logging and errors**: Logs request and processing behavior and returns normalized errors for common failure cases.
 - **Endpoint documentation**: Serves generated documentation for available service endpoints.
 - **Deployment**: Provides container and compose definitions with local volumes for data, uploads, and temporary files.
+- **Library surface**: Provides MVP media-library endpoints and a lightweight browser UI for import, browsing, filtering, details, organization, health, and export.
 
 ## Asset Lifecycle
 
@@ -59,6 +62,9 @@ The system is organized around a small set of responsibilities that match the fi
 - **Stored file**: Original media binary written to persistent upload storage.
 - **Thumbnail**: Derived preview image written to thumbnail storage.
 - **Migration record**: Versioned record of applied schema changes.
+- **Organization marker**: User-created favorite state or tag attached to an asset.
+- **Import event**: User-visible record of accepted, duplicate, unsupported, failed, or processing-pending import outcomes.
+- **Library summary export**: Readable asset catalog and metadata index that excludes original media files.
 
 ## Operational Dependencies
 

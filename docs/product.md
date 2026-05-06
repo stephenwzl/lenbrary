@@ -18,6 +18,12 @@ Lenbrary is a personal media asset management product for photography and media-
 
 The current product promise is a trustworthy personal media foundation: reliable ingestion, original preservation, deduplication, previews, and rich metadata. A full visual library experience is an expected product direction, but the current repository first establishes the backend foundation before adding gallery, search, tagging, curation, or backup/export workflows.
 
+## MVP Direction
+
+The next MVP is a personal media library review loop for one enthusiast in a trusted private environment. The MVP starts with import, visual browsing, basic filtering, asset detail, original-file access, and confirmed deletion. This is the shortest path from the current backend foundation to a usable personal product.
+
+The second increment adds lightweight organization with favorites and free-form tags. The third increment adds personal data confidence through library health and a readable summary export. The export is a catalog and metadata index for audit, migration planning, and backup planning; it does not include original media files and is not a backup/restore system.
+
 ## Value Proposition
 
 - Reduce friction for an enthusiast collecting images and videos into a consistent personal library.
@@ -42,6 +48,7 @@ The current product promise is a trustworthy personal media foundation: reliable
 - **Asset retrieval**: Retrieve asset details, original files, and thumbnails.
 - **Asset removal**: Delete an asset and its associated stored files.
 - **Future personal organization**: Search, filter, tag, group, and review assets around personal collection needs.
+- **MVP review loop**: Import, browse, filter, inspect, organize lightly, check health, and export a catalog/metadata index.
 
 ## Business Objectives
 

@@ -37,6 +37,16 @@ npm run dev
 
 服务器将在 `http://localhost:3000` 启动。
 
+### MVP 媒体库界面
+
+启动服务后打开：
+
+```text
+http://localhost:3000/
+```
+
+当前 MVP 界面提供个人媒体库 review loop：多文件导入、导入结果提示、视觉浏览、媒体/相机/收藏/标签筛选、资产详情、原文件访问、删除确认、库状态和摘要导出。摘要导出是资产清单和元数据索引，不包含原始媒体文件。
+
 ### 生产构建
 
 ```bash
@@ -140,6 +150,17 @@ GET /api/assets/:id/exif
 
 ```http
 DELETE /api/assets/:id
+```
+
+### MVP Library API
+
+```http
+GET /api/library/assets
+GET /api/library/assets/:id
+PUT /api/library/assets/:id/favorite
+PUT /api/library/assets/:id/tags
+GET /api/library/health
+GET /api/library/export
 ```
 
 ## 项目结构
