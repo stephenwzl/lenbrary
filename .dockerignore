@@ -1,6 +1,7 @@
 # 依赖目录
 node_modules
 npm-debug.log
+*.log*
 
 # 开发相关
 .vscode
@@ -11,6 +12,7 @@ npm-debug.log
 
 # 构建输出
 dist
+build
 
 # 数据目录（挂载卷）
 uploads

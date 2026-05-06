@@ -1,5 +1,6 @@
 logs/
 npm-debug.log
+*.log
 node_modules/
 coverage/
 .idea/
@@ -12,6 +13,7 @@ run/
 
 # Build output
 dist/
+build/
 
 # Environment variables
 .env
