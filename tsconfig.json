@@ -20,7 +20,10 @@
     "allowImportingTsExtensions": false,
     "noEmit": false,
     "allowSyntheticDefaultImports": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "paths": {
+      "@/*": ["./src/ui/react/*"]
+    }
   },
   "include": [
     "src/**/*"

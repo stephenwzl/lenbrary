@@ -11,7 +11,7 @@ describe('frontend control surface support', () => {
       const body = await listing.json();
 
       expect(page.status).toBe(200);
-      expect(await page.text()).toContain('loadMoreButton');
+      expect(await page.text()).toContain('id="root"');
       expect(listing.status).toBe(200);
       expect(body.pagination).toMatchObject({ limit: 3, offset: 0 });
     } finally {

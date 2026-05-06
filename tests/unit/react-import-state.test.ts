@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createInitialImportItems } from '../../src/ui/react/App';
+import { createInitialImportItems } from '@/hooks/use-import';
 
 describe('React import state helpers', () => {
   it('creates queued rows for selected files', () => {

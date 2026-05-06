@@ -1,0 +1,112 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --color-background: #111b1f;
+  --color-foreground: #eef7f4;
+  --color-card: rgba(255, 255, 255, 0.12);
+  --color-card-foreground: #eef7f4;
+  --color-popover: rgba(255, 255, 255, 0.14);
+  --color-popover-foreground: #eef7f4;
+  --color-primary: rgba(134, 239, 172, 0.82);
+  --color-primary-foreground: #111b1f;
+  --color-secondary: rgba(255, 255, 255, 0.1);
+  --color-secondary-foreground: #eef7f4;
+  --color-muted: rgba(255, 255, 255, 0.06);
+  --color-muted-foreground: rgba(238, 247, 244, 0.72);
+  --color-accent: rgba(255, 255, 255, 0.12);
+  --color-accent-foreground: #eef7f4;
+  --color-destructive: rgba(248, 113, 113, 0.65);
+  --color-destructive-foreground: #111b1f;
+  --color-border: rgba(255, 255, 255, 0.18);
+  --color-input: rgba(255, 255, 255, 0.18);
+  --color-ring: rgba(134, 239, 172, 0.7);
+
+  --color-status-success: rgba(134, 239, 172, 0.5);
+  --color-status-info: rgba(125, 211, 252, 0.55);
+  --color-status-warning: rgba(253, 224, 71, 0.6);
+  --color-status-danger: rgba(248, 113, 113, 0.65);
+
+  --color-glass-border: rgba(255, 255, 255, 0.22);
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+
+  --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+
+  @keyframes accordion-down {
+    from { height: 0; }
+    to { height: var(--radix-accordion-content-height); }
+  }
+
+  @keyframes accordion-up {
+    from { height: var(--radix-accordion-content-height); }
+    to { height: 0; }
+  }
+}
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  * {
+    box-sizing: border-box;
+    border-color: var(--color-border);
+  }
+
+  body {
+    margin: 0;
+    min-width: 320px;
+    min-height: 100vh;
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    background-image:
+      radial-gradient(circle at 20% 0%, rgba(125, 211, 252, 0.18), transparent 34rem),
+      linear-gradient(135deg, #142326, #26332f 46%, #211f2a);
+  }
+
+  /* Focus ring — applies --ring token on keyboard focus */
+  :focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+  }
+
+  /* Remove default outline for mouse clicks */
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+}
+
+/* Glass panel utility — core liquid glass visual primitive */
+@layer components {
+  .glass-panel {
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.07));
+    border: 1px solid var(--color-glass-border);
+    box-shadow:
+      0 24px 80px rgba(0, 0, 0, 0.32),
+      inset 0 1px rgba(255, 255, 255, 0.28);
+    backdrop-filter: blur(22px) saturate(150%);
+    border-radius: var(--radius-lg);
+  }
+}
+
+@layer utilities {
+  /* Reduced motion — disables all transitions and animations */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      scroll-behavior: auto !important;
+      transition-duration: 0s !important;
+      animation-duration: 0s !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+}
