@@ -1,7 +1,7 @@
 # Lenbrary Product
 
-**Purpose**: Capture product positioning, target users, workflows, business objectives, scope boundaries, and unresolved business decisions for Lenbrary.  
-**Audience**: Maintainers, product stakeholders, and contributors planning roadmap changes.  
+**Purpose**: Capture product positioning, target users, workflows, business objectives, scope boundaries, and unresolved business decisions for Lenbrary as a personal product.  
+**Audience**: Maintainers, product stakeholders, and contributors planning a personal media asset management product for photography/media enthusiasts.  
 **Last reviewed**: 2026-05-06  
 **Scope**: Product baseline inferred from the current repository and documentation.  
 **Non-scope**: This document does not finalize market strategy or introduce new runtime behavior.
@@ -9,29 +9,29 @@
 ## Evidence Status
 
 - **Verified fact**: The current server supports media ingestion, local storage, duplicate detection, thumbnails, metadata extraction, listing, retrieval, deletion, migrations, and container deployment.
-- **Assumption**: The first product audience is local or self-hosted maintainers who need a media asset backend.
-- **Open question**: Final business positioning and user model are not yet confirmed.
+- **Confirmed positioning**: The initial product is for photography and media asset management enthusiasts managing personal collections.
+- **Open question**: The exact first enthusiast workflow and user experience depth are not yet confirmed.
 
 ## Product Positioning
 
-Lenbrary is best described today as a local or self-hosted media asset backend. It helps users preserve original image and video files, avoid duplicate uploads, create useful previews, and retain technical metadata that can support future discovery, organization, or automation workflows.
+Lenbrary is a personal media asset management product for photography and media-organization enthusiasts. Today it is implemented as a local or self-hosted media asset backend that helps an individual preserve original image and video files, avoid duplicate uploads, create useful previews, and retain technical metadata for future discovery, organization, and review workflows.
 
-The current product promise is infrastructure reliability and media understanding, not a full visual library experience. This distinction matters because roadmap decisions should first strengthen ingestion, metadata integrity, storage safety, and maintainability before assuming gallery, collaboration, or hosted-product requirements.
+The current product promise is a trustworthy personal media foundation: reliable ingestion, original preservation, deduplication, previews, and rich metadata. A full visual library experience is an expected product direction, but the current repository first establishes the backend foundation before adding gallery, search, tagging, curation, or backup/export workflows.
 
 ## Value Proposition
 
-- Reduce friction in collecting images and videos into a consistent asset store.
-- Preserve original files while generating lightweight previews for faster review.
-- Extract structured metadata that would otherwise remain hidden inside media files.
+- Reduce friction for an enthusiast collecting images and videos into a consistent personal library.
+- Preserve original files while generating lightweight previews for faster personal review.
+- Surface structured photo/video metadata that would otherwise remain hidden inside media files.
 - Avoid duplicate storage through content-based detection.
-- Provide a clear backend foundation for future media browsing, search, or automation features.
+- Provide a foundation for personal browsing, search, tagging, albums, filtering, backup/export, and collection hygiene.
 
 ## Target User Segments
 
-- **Primary current segment, assumed**: A technical maintainer or self-hosting user managing personal or local media collections.
-- **Secondary possible segment**: Photographers or content creators who care about EXIF, camera settings, lens data, and original file preservation.
-- **Developer segment**: Application developers who need a media ingestion and metadata backend for another product.
-- **Future possible segment**: Small teams needing shared asset infrastructure, pending decisions about identity, permissions, and sharing.
+- **Primary segment**: Photography and media asset management enthusiasts managing personal image/video collections.
+- **Strong-fit subsegment**: Photographers and camera enthusiasts who care about EXIF, camera/lens data, capture settings, film simulations, and original file preservation.
+- **Secondary segment**: Personal content creators who need a durable local library for mixed images and videos.
+- **Non-initial segments**: Small teams, public sharing workflows, hosted SaaS customers, and developer-platform users.
 
 ## Primary Workflows
 
@@ -41,19 +41,20 @@ The current product promise is infrastructure reliability and media understandin
 - **Asset browsing**: List assets by page and optionally by media type.
 - **Asset retrieval**: Retrieve asset details, original files, and thumbnails.
 - **Asset removal**: Delete an asset and its associated stored files.
+- **Future personal organization**: Search, filter, tag, group, and review assets around personal collection needs.
 
 ## Business Objectives
 
-- **BO-001: Faster onboarding**: A new contributor can understand the product baseline and current scope in under 20 minutes.
-  - Indicator: Contributor answers 8 of 10 baseline questions from documentation alone.
-  - Evidence needed: Maintainer or contributor review.
-- **BO-002: Better roadmap decisions**: A proposed feature can be classified as in scope, out of scope, or requiring clarification in under 10 minutes.
-  - Indicator: Reviewers can apply the decision criteria in this document without reading source code.
-  - Evidence needed: Roadmap review examples.
-- **BO-003: Media organization value**: Users can preserve media files with useful derived previews and metadata while avoiding duplicate storage.
+- **BO-001: Personal collection confidence**: An enthusiast can upload images/videos and trust that originals, previews, duplicate status, and core metadata are preserved.
   - Indicator: Upload workflow returns asset identity, duplicate status when applicable, thumbnail availability when processing succeeds, and metadata availability when extraction succeeds.
   - Evidence needed: Manual or automated workflow checks.
-- **BO-004: Maintainable self-hosting**: A maintainer can identify operational dependencies, persistence locations, and backup concerns before deployment.
+- **BO-002: Metadata-led organization**: A photographer can inspect meaningful image/video metadata and use it as the basis for future search, filtering, and organization.
+  - Indicator: Documentation and workflow checks confirm camera, lens, timestamp, capture settings, video technical fields, and raw metadata expectations.
+  - Evidence needed: Sample media review with representative cameras and video files.
+- **BO-003: Better personal roadmap decisions**: A proposed feature can be classified as in scope, out of scope, or requiring clarification in under 10 minutes.
+  - Indicator: Reviewers can apply the decision criteria in this document without reading source code.
+  - Evidence needed: Roadmap review examples.
+- **BO-004: Maintainable personal operation**: A maintainer can identify operational dependencies, persistence locations, and backup concerns before trusting Lenbrary with a personal collection.
   - Indicator: Deployment review identifies local database, upload directories, temporary storage, and media-processing dependencies.
   - Evidence needed: Self-hosting review or deployment checklist.
 
@@ -69,6 +70,7 @@ The current product promise is infrastructure reliability and media understandin
 - Asset listing, retrieval, file streaming, thumbnail retrieval, and deletion.
 - Local database persistence and migrations.
 - Self-hosted container operation.
+- Product direction for personal browsing, metadata review, collection hygiene, search, tagging, grouping, and backup/export.
 
 ### Out Of Scope Until Clarified
 
@@ -78,39 +80,43 @@ The current product promise is infrastructure reliability and media understandin
 - Backup and restore as a product guarantee.
 - Retention policy or archival lifecycle.
 - Legal, privacy, copyright, or compliance workflows.
-- Full frontend gallery, albums, tagging, search, editing, or curation workflows.
+- Multi-user team asset management.
+- Hosted SaaS operation.
+- Public publishing or collaboration-first workflows.
+- Professional DAM features such as approval workflows, licensing, rights management, or client delivery portals.
+- Editing or destructive media transformation workflows.
 
 ## Roadmap Decision Criteria
 
-Classify a proposed feature as **in scope** when it strengthens the current baseline: ingestion reliability, metadata quality, duplicate handling, storage safety, asset retrieval, migration safety, documentation, or local/self-hosted operation.
+Classify a proposed feature as **in scope** when it strengthens personal media asset management: ingestion reliability, metadata quality, duplicate handling, storage safety, asset retrieval, migration safety, local/private operation, personal browsing, search, tagging, grouping, collection hygiene, or backup/export.
 
-Classify a proposed feature as **out of scope** when it assumes hosted multi-user behavior, public sharing, identity, compliance, or full gallery workflows without first resolving the relevant business questions.
+Classify a proposed feature as **out of scope** when it primarily serves hosted multi-user behavior, team collaboration, public publishing, professional DAM workflows, compliance programs, or developer-platform use before the personal enthusiast product is strong.
 
-Classify a proposed feature as **needs clarification** when it changes target audience, deployment exposure, data retention expectations, backup responsibility, privacy posture, or the meaning of media organization.
+Classify a proposed feature as **needs clarification** when it changes deployment exposure, data retention expectations, backup responsibility, privacy posture, media organization model, or the balance between photographer-specific and general media workflows.
 
 ## Business Goal Clarification Questions
 
-1. **Primary user**
-   - Recommended default: Technical self-hosting user managing local media.
-   - Alternatives: Photographer, small team, developer platform.
-   - Implications: Determines whether UX, metadata depth, access control, or integration contracts dominate the roadmap.
+1. **First enthusiast workflow**
+   - Recommended default: Ingestion, duplicate avoidance, thumbnail preview, and metadata inspection.
+   - Alternatives: Gallery browsing, search/filtering, tagging/albums, backup/export.
+   - Implications: Determines the first user-facing experience beyond the backend.
    - Priority: Scope.
 
 2. **Deployment posture**
-   - Recommended default: Local or private self-hosted deployment.
-   - Alternatives: Public network service, hosted SaaS, embedded backend.
+   - Recommended default: Local or private self-hosted deployment for personal collections.
+   - Alternatives: LAN access, public network service, hosted SaaS.
    - Implications: Changes security, identity, backup, operational support, and compliance expectations.
    - Priority: Security/privacy.
 
 3. **Source of product value**
-   - Recommended default: Reliable ingestion, original preservation, deduplication, previews, and metadata.
-   - Alternatives: Search and discovery, collaboration, publishing, archival compliance.
+   - Recommended default: Original preservation, deduplication, previews, metadata, and personal collection hygiene.
+   - Alternatives: Search and discovery, visual curation, publishing, backup/archive.
    - Implications: Changes which workflows should be optimized first.
    - Priority: Scope.
 
 4. **Metadata role**
-   - Recommended default: Metadata is descriptive and useful for inspection.
-   - Alternatives: Metadata drives search, filtering, smart collections, automation, or analytics.
+   - Recommended default: Metadata is both inspectable and a future driver for search, filtering, and smart groupings.
+   - Alternatives: Metadata remains descriptive only, or metadata becomes analytics/automation input.
    - Implications: Changes data modeling, indexing, and user-facing discovery requirements.
    - Priority: User experience.
 
@@ -121,18 +127,18 @@ Classify a proposed feature as **needs clarification** when it changes target au
    - Priority: Security/privacy.
 
 6. **Access model**
-   - Recommended default: Trusted environment with no product-level identity promise.
-   - Alternatives: Single-user auth, multi-user roles, API tokens, public read-only access.
+   - Recommended default: Single personal user in a trusted private environment.
+   - Alternatives: Single-user auth, household/LAN access, multi-user roles, API tokens, public read-only access.
    - Implications: Changes every asset access and deletion workflow.
    - Priority: Security/privacy.
 
 ## Stakeholder Review Prompts
 
-- Which user segment is the product optimizing for first?
-- What user workflow would make the project valuable even without a full frontend?
+- Which personal enthusiast workflow should be optimized first?
+- What user workflow would make the product valuable before a full gallery exists?
 - Which out-of-scope item must become in scope before broader deployment?
 - Which business objective should be measured first?
-- What risk would block external users from adopting Lenbrary?
+- What risk would stop a user from trusting Lenbrary with a personal photo/video collection?
 
 ## Maintenance Guidance
 

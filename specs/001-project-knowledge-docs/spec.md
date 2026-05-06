@@ -9,7 +9,7 @@
 
 ### User Story 1 - Establish Shared Project Understanding (Priority: P1)
 
-As a project stakeholder, I want a concise project knowledge document that explains what Lenbrary is, who it serves, what problems it solves, and what currently exists, so that future product and engineering decisions start from a shared baseline instead of scattered code reading.
+As a project stakeholder, I want a concise project knowledge document that explains Lenbrary as a personal product for photography and media asset management enthusiasts, what problems it solves, and what currently exists, so that future product and engineering decisions start from a shared baseline instead of scattered code reading.
 
 **Why this priority**: The project currently has implementation-level README content but lacks a stakeholder-oriented understanding of product intent, domain boundaries, and current capability coverage.
 
@@ -17,7 +17,7 @@ As a project stakeholder, I want a concise project knowledge document that expla
 
 **Acceptance Scenarios**:
 
-1. **Given** a new contributor with no prior context, **When** they read the project knowledge document, **Then** they can accurately summarize Lenbrary as a local media asset management service for image and video ingestion, metadata extraction, retrieval, and deletion.
+1. **Given** a new contributor with no prior context, **When** they read the project knowledge document, **Then** they can accurately summarize Lenbrary as a personal media asset management product for image and video ingestion, metadata extraction, retrieval, and deletion.
 2. **Given** a stakeholder reviewing the project direction, **When** they inspect the documented scope, **Then** they can distinguish current capabilities from assumptions, risks, and future opportunities.
 3. **Given** a product or engineering discussion, **When** participants reference the document, **Then** they use a consistent vocabulary for assets, thumbnails, metadata, duplicate files, storage, and migrations.
 
@@ -25,9 +25,9 @@ As a project stakeholder, I want a concise project knowledge document that expla
 
 ### User Story 2 - Create Portable Product Documentation (Priority: P2)
 
-As a product owner or maintainer, I want a portable product document that states the target users, value proposition, workflows, feature boundaries, and measurable business goals, so that roadmap and prioritization decisions can be made without relying on tribal knowledge.
+As a product owner or maintainer, I want a portable product document that anchors the target users as photography and media asset management enthusiasts, and states the value proposition, workflows, feature boundaries, and measurable business goals, so that roadmap and prioritization decisions can be made without relying on tribal knowledge.
 
-**Why this priority**: Business goals are currently implicit. A product document is needed before planning future features, onboarding users, or deciding whether the project is personal-library software, team asset infrastructure, or a reusable media backend.
+**Why this priority**: Business goals are currently implicit. A product document is needed before planning future features, onboarding users, or deciding how to evolve the personal-library product without drifting into team asset infrastructure or a reusable media backend.
 
 **Independent Test**: Can be tested by asking stakeholders to identify the intended audience, top workflows, current product promises, out-of-scope expectations, and unresolved goal questions from the document alone.
 
@@ -66,7 +66,7 @@ As an engineer or technical maintainer, I want an architecture document that des
 ### Functional Requirements
 
 - **FR-001**: The documentation set MUST include a project knowledge document that summarizes project purpose, target audience, current capabilities, current limitations, vocabulary, and open questions.
-- **FR-002**: The documentation set MUST include a product document that describes user segments, core workflows, value proposition, current feature boundaries, non-goals, business objectives, and roadmap decision criteria.
+- **FR-002**: The documentation set MUST include a product document that describes photography/media enthusiast user segments, core personal workflows, value proposition, current feature boundaries, non-goals, business objectives, and roadmap decision criteria.
 - **FR-003**: The documentation set MUST include an architecture document that describes major system responsibilities, data concepts, operational dependencies, deployment context, cross-cutting concerns, and known risks.
 - **FR-004**: The documentation MUST reflect observed repository facts for the current baseline, including media upload, image and video support, duplicate detection, thumbnail generation, image EXIF metadata, video metadata, asset listing and retrieval, deletion, local persistence, migrations, and generated endpoint documentation.
 - **FR-005**: The documentation MUST separate verified facts, reasonable assumptions, unresolved business questions, and recommended next decisions.
@@ -98,8 +98,8 @@ As an engineer or technical maintainer, I want an architecture document that des
 
 ## Assumptions
 
-- The first audience is the project maintainer and future contributors, not external end users.
-- The current baseline is a local or self-hosted media asset server focused on images and videos rather than a multi-tenant hosted product.
+- The first product audience is photography and media asset management enthusiasts managing personal image/video collections.
+- The current baseline is a local or self-hosted personal media asset server focused on images and videos rather than a multi-tenant hosted product.
 - The documentation work should not change runtime behavior, external contracts, data schema, or deployment configuration.
 - Markdown is sufficient for portability and repository-native maintenance.
 - Business goals are not fully defined in the current repository, so the first version should clarify and structure decisions rather than invent final strategy.

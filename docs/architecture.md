@@ -1,7 +1,7 @@
 # Lenbrary Architecture
 
-**Purpose**: Describe Lenbrary's current system responsibilities, asset lifecycle, data concepts, operational dependencies, deployment context, and known risks.  
-**Audience**: Engineers, maintainers, and technical stakeholders planning future changes.  
+**Purpose**: Describe Lenbrary's current system responsibilities, asset lifecycle, data concepts, operational dependencies, deployment context, and known risks for the personal media product.  
+**Audience**: Engineers, maintainers, and technical stakeholders planning a personal media asset management product for photography/media enthusiasts.  
 **Last reviewed**: 2026-05-06  
 **Scope**: Current repository architecture for the Lenbrary server.  
 **Non-scope**: This document is not a source-code walkthrough and does not introduce new implementation requirements.
@@ -9,14 +9,14 @@
 ## Evidence Status
 
 - **Verified fact**: Architecture statements are based on repository files listed in the evidence references.
-- **Assumption**: Local/self-hosted operation is the current deployment baseline.
+- **Product anchor**: The architecture currently supports a personal local/self-hosted product for photography and media asset management enthusiasts.
 - **Open question**: Security, identity, backup, retention, and public network exposure are not architecturally defined as product guarantees.
 
 ## System Overview
 
-Lenbrary is a media asset web service. It exposes endpoints for uploading, listing, retrieving, previewing, inspecting, and deleting image or video assets. It stores original media files and thumbnails on the local filesystem, stores asset and metadata records in a local database, and uses media-processing tools to derive thumbnails and metadata.
+Lenbrary is currently implemented as a media asset web service backing a personal media management product. It exposes endpoints for uploading, listing, retrieving, previewing, inspecting, and deleting image or video assets. It stores original media files and thumbnails on the local filesystem, stores asset and metadata records in a local database, and uses media-processing tools to derive thumbnails and metadata.
 
-The system is organized around a small set of responsibilities: application assembly, request routing, upload handling, storage, media processing, persistence, migrations, logging, endpoint documentation, and containerized operation.
+The system is organized around a small set of responsibilities that match the first personal-product needs: application assembly, request routing, upload handling, storage, media processing, persistence, migrations, logging, endpoint documentation, and containerized operation.
 
 ## Major Responsibilities
 
@@ -75,6 +75,8 @@ The repository includes a container image definition and compose configuration f
 
 The compose configuration maps host directories into the container for data, uploads, and temporary files. This makes deployment simple but places backup and durability responsibility on the operator unless a future product decision changes that promise.
 
+For the confirmed personal-product positioning, this local persistence model is a reasonable starting point: it keeps ownership close to the user and avoids hosted-service complexity. It also means backup/export and data portability become important future product concerns before users rely on Lenbrary as a durable personal library.
+
 ## Cross-Cutting Concerns
 
 - **Logging**: Request logging and internal processing logs provide operational visibility.
@@ -91,7 +93,7 @@ The compose configuration maps host directories into the container for data, upl
 - **Backup ambiguity**: Backup and restore are operational helpers, not yet a defined product guarantee.
 - **Media-processing failure modes**: Corrupt, unsupported, very large, or unusual media may fail thumbnail or metadata extraction.
 - **Metadata variability**: EXIF and video metadata fields vary widely across devices and formats.
-- **Undefined auth/security posture**: The current baseline does not define user identity, permissions, or asset-level access control.
+- **Undefined auth/security posture**: The current baseline fits a trusted personal environment but does not define user identity, permissions, or asset-level access control.
 - **CORS exposure risk**: Broad CORS settings may be acceptable locally but should be reviewed for networked deployment.
 - **Schema drift**: The initial schema and migrations both describe data shape; maintainers should reason from applied migrations when evaluating live databases.
 - **Filesystem consistency**: Database records can point to files that no longer exist if files are moved or deleted outside the service.
@@ -117,6 +119,7 @@ The compose configuration maps host directories into the container for data, upl
 - Did deployment exposure change enough to require authentication, authorization, or CORS review?
 - Did supported media types or metadata extraction behavior change?
 - Did backup, restore, retention, or compliance become a product promise?
+- Did the personal-product roadmap add search, tagging, albums, or backup/export expectations that require new architecture?
 
 ## Maintenance Guidance
 

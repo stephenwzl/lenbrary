@@ -1,7 +1,7 @@
 # Lenbrary Project Knowledge
 
-**Purpose**: Provide a shared baseline for what Lenbrary is, what exists today, what is assumed, and what still needs a product decision.  
-**Audience**: Project maintainer, future contributors, and stakeholders evaluating product direction.  
+**Purpose**: Provide a shared baseline for what Lenbrary is, what exists today, and what decisions still shape the personal media-management product.  
+**Audience**: Project maintainer, future contributors, and stakeholders building a personal product for photography and media asset management enthusiasts.  
 **Last reviewed**: 2026-05-06  
 **Scope**: Current repository baseline for the Lenbrary server.  
 **Non-scope**: This document does not define new runtime behavior, external contracts, schema changes, deployment changes, or final business strategy.
@@ -9,19 +9,19 @@
 ## Evidence Status
 
 - **Verified fact**: Confirmed from repository artifacts listed in the evidence map.
-- **Assumption**: Reasonable interpretation of current project direction, not yet confirmed by stakeholder decision.
+- **Assumption**: Reasonable interpretation of current project direction when repository evidence or stakeholder input is incomplete.
 - **Open question**: A product, business, or architecture decision that needs explicit confirmation.
 - **Recommended decision**: A default choice proposed to keep planning moving until replaced by stakeholder input.
 
 ## What Lenbrary Is
 
-Lenbrary is a local or self-hosted media asset management server for image and video files. It provides ingestion, storage, metadata extraction, thumbnail generation, duplicate detection, listing, retrieval, and deletion for media assets.
+Lenbrary is a personal media asset management product for photography and media-organization enthusiasts. The current implementation is a local or self-hosted server for image and video files, providing ingestion, storage, metadata extraction, thumbnail generation, duplicate detection, listing, retrieval, and deletion for media assets.
 
-The current repository positions Lenbrary as server-side infrastructure rather than a complete end-user gallery application. The existing user interface is generated endpoint documentation and service endpoints, not a dedicated media browsing frontend.
+The current repository provides the backend foundation for that personal product. It is not yet a complete end-user gallery application; the existing user interface is generated endpoint documentation and service endpoints, not a dedicated media browsing frontend.
 
 ## Intended Audience
 
-The current audience is maintainers and developers who need a reliable media asset backend for personal, local, or self-hosted use. A future audience may include photographers, content creators, small teams, or application developers, but the repository does not yet prove which audience is the primary business target.
+The primary audience is an individual photography or media asset management enthusiast who wants to preserve, inspect, and organize a personal image/video collection with strong metadata awareness. Contributors and maintainers are secondary users who build and operate the product. Small teams, developer-platform use, and hosted multi-user scenarios are not the initial target.
 
 ## Current Capabilities
 
@@ -55,21 +55,21 @@ The current audience is maintainers and developers who need a reliable media ass
 - Backup, restore, retention, archival, and disaster recovery policy are not defined as product behavior.
 - Compliance posture for privacy, copyright, retention, or regulated data is not defined.
 - Search beyond list filtering, tagging, albums, editing, rating workflows, and rich discovery are not established baseline capabilities.
-- The project is not currently documented as a hosted SaaS product or a complete visual media library application.
+- The project is not positioned as a hosted SaaS product, team DAM system, or complete visual media library application yet.
 
 ## Risks And Operational Dependencies
 
 - Local file persistence means data durability depends on host volume, filesystem permissions, and backup discipline.
 - Media-processing steps can fail for unsupported, corrupt, very large, or unusual files; the upload flow should remain understandable when derived metadata or thumbnails are absent.
 - EXIF and video metadata vary heavily by camera, software, codec, and container format, so fields may be sparse or inconsistent.
-- The undefined auth and sharing posture limits safe exposure beyond trusted local or self-hosted environments.
+- The undefined auth and sharing posture is acceptable for a trusted personal setup but limits safe exposure beyond private environments.
 - Schema drift is possible because the initial schema file and later migrations both describe database shape; maintainers should treat migrations as the source of history.
 - Container operation depends on external media tools and mounted volumes being available in the runtime environment.
 
 ## Open Questions
 
-- Who is the primary target user: personal media archivist, photographer, small team, or application developer?
-- Is Lenbrary intended to remain a local/self-hosted service or become a networked multi-user product?
+- Which enthusiast workflow should come first: ingestion, metadata inspection, browsing, search, tagging, albuming, or backup/export?
+- Should the personal product optimize first for photographers' EXIF/camera workflows or broader mixed media organization?
 - Should authentication and authorization be required before exposing assets outside localhost or a trusted private network?
 - What is the expected backup and restore policy for media files and the local database?
 - Should metadata become a discovery and search surface, or remain descriptive information attached to assets?
@@ -77,7 +77,7 @@ The current audience is maintainers and developers who need a reliable media ass
 
 ## Recommended Defaults
 
-- Treat the current product as local or self-hosted until a stakeholder explicitly chooses hosted or multi-user operation.
+- Treat the current product as a personal local/self-hosted product for photography and media asset management enthusiasts.
 - Treat authentication, sharing, backup, retention, and compliance as out of scope for the current baseline but high-priority decisions before broader exposure.
 - Treat generated thumbnails and extracted metadata as best-effort derived data; original assets and asset records are the core durable product value.
 
@@ -101,7 +101,8 @@ The current audience is maintainers and developers who need a reliable media ass
 - Can a reader list the current supported media types and derived data?
 - Can a reader distinguish current features from future product possibilities?
 - Can a reader identify where originals, thumbnails, metadata, and schema history live conceptually?
-- Can a reader name at least three unresolved product or business decisions?
+- Can a reader explain why the first target user is a personal photography/media asset management enthusiast?
+- Can a reader name at least three unresolved product decisions for that personal workflow?
 
 ## Maintenance Guidance
 

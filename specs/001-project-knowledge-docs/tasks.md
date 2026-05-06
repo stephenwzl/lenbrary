@@ -63,14 +63,14 @@
 
 ## Phase 4: User Story 2 - Create Portable Product Documentation (Priority: P2)
 
-**Goal**: Deliver `docs/product.md` so stakeholders can reason about target users, workflows, value proposition, feature boundaries, business objectives, and unresolved goal decisions.
+**Goal**: Deliver `docs/product.md` so stakeholders can reason about the photography/media enthusiast target user, workflows, value proposition, feature boundaries, business objectives, and unresolved goal decisions.
 
 **Independent Test**: Ask stakeholders to identify the intended audience, top workflows, current product promises, out-of-scope expectations, and unresolved goal questions from `docs/product.md` alone.
 
 ### Implementation for User Story 2
 
 - [X] T018 [P] [US2] Create product document structure in `docs/product.md` with title, purpose, audience, last reviewed date, scope, non-scope, verified facts, assumptions, open questions, and maintenance guidance
-- [X] T019 [US2] Document product positioning and value proposition in `docs/product.md` using the current baseline of local or self-hosted media asset management
+- [X] T019 [US2] Document product positioning and value proposition in `docs/product.md` using the current baseline of personal photography/media asset management
 - [X] T020 [US2] Document target user segments and primary workflows in `docs/product.md`, including media ingestion, duplicate avoidance, metadata review, asset browsing, retrieval, and deletion
 - [X] T021 [US2] Define at least three measurable business objectives in `docs/product.md` with indicators and evidence needed
 - [X] T022 [US2] Document scope boundaries and non-goals in `docs/product.md`, including multi-tenant hosting, user identity, remote sharing, backup policy, retention policy, and compliance unless later clarified

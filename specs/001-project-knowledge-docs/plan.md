@@ -7,7 +7,7 @@
 
 ## Summary
 
-Create a portable documentation baseline for Lenbrary that builds shared project understanding, captures product intent, documents current architecture, and structures unresolved business goals. The implementation approach is documentation-only: add Markdown deliverables under `docs/` plus review contracts and quickstart guidance, without changing runtime behavior, external contracts, schema, or deployment configuration.
+Create a portable documentation baseline for Lenbrary that anchors the product as a personal media asset management tool for photography/media enthusiasts, captures product intent, documents current architecture, and structures unresolved business goals. The implementation approach is documentation-only: add Markdown deliverables under `docs/` plus review contracts and quickstart guidance, without changing runtime behavior, external contracts, schema, or deployment configuration.
 
 ## Technical Context
 
@@ -15,11 +15,11 @@ Create a portable documentation baseline for Lenbrary that builds shared project
 **Primary Dependencies**: Existing repository evidence from README, source layout, migrations, configuration, Docker files, and generated endpoint comments; no new runtime dependency  
 **Storage**: Documentation files stored in repository; product context describes existing local file and SQLite persistence as baseline facts  
 **Testing**: Markdown review checklist plus repository text checks for placeholders and stale references; no application test changes required for documentation-only work  
-**Target Platform**: Repository-native documentation for local and self-hosted Lenbrary maintainers  
+**Target Platform**: Repository-native documentation for a personal local/self-hosted Lenbrary product  
 **Project Type**: Documentation feature for an existing media asset web service  
 **Performance Goals**: New contributor can answer 8 of 10 baseline questions after 20 minutes; proposed feature scope can be assessed in under 10 minutes  
 **Constraints**: No runtime behavior changes; no external contract changes; no schema changes; no secrets or sensitive local paths; distinguish verified facts, assumptions, and open questions  
-**Scale/Scope**: Three primary documents plus review prompts: project knowledge, product, and architecture documentation for the current baseline
+**Scale/Scope**: Three primary documents plus review prompts: project knowledge, product, and architecture documentation for the personal media asset management baseline
 
 ## Constitution Check
 
