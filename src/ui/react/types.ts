@@ -1,23 +1,6 @@
-import type { Asset, ExifData, VideoMetadata } from './assets.types';
-
 export type ImportStatus = 'queued' | 'uploading' | 'accepted' | 'duplicate' | 'unsupported' | 'failed' | 'completed' | 'processing-pending';
-export type ProcessingHealth = 'normal' | 'missing-thumbnail' | 'missing-metadata' | 'missing-original' | 'mixed-issues';
 export type GroupMode = 'flat' | 'timeline' | 'tag' | 'camera';
-export type HealthSeverity = 'info' | 'warning' | 'critical';
-
-export interface LibraryFilters {
-  limit: number;
-  offset: number;
-  type?: 'image' | 'video';
-  favorite?: boolean;
-  tag?: string;
-  dateFrom?: number;
-  dateTo?: number;
-  camera?: string;
-  hasThumbnail?: boolean;
-  hasMetadata?: boolean;
-  groupBy?: GroupMode;
-}
+export type Severity = 'info' | 'warning' | 'critical';
 
 export interface AssetMetadataView {
   metadataType: 'image' | 'video';
@@ -51,10 +34,10 @@ export interface MediaAssetView {
   metadata?: AssetMetadataView;
   favorite: boolean;
   tags: string[];
-  processingHealth: ProcessingHealth;
+  processingHealth: string;
 }
 
-export interface ImportResult {
+export interface ImportQueueItem {
   inputName: string;
   status: ImportStatus;
   assetId?: number;
@@ -63,7 +46,6 @@ export interface ImportResult {
   metadataAvailable: boolean;
   thumbnailAvailable: boolean;
   nextAction?: string;
-  reasonCode?: string;
 }
 
 export interface ImportSummary {
@@ -94,7 +76,7 @@ export interface BrowseGroup {
 
 export interface HealthIssue {
   issueType: 'missing-original' | 'missing-thumbnail' | 'missing-metadata' | 'duplicate-import' | 'export-boundary';
-  severity: HealthSeverity;
+  severity: Severity;
   affectedAssetIds: number[];
   summary: string;
   recommendedAction: string;
@@ -102,37 +84,22 @@ export interface HealthIssue {
 }
 
 export interface LibraryHealth {
-  assetCounts: {
-    total: number;
-    image: number;
-    video: number;
-  };
-  issueCounts: {
-    missingThumbnails: number;
-    missingMetadata: number;
-    missingOriginals: number;
-  };
+  assetCounts: { total: number; image: number; video: number };
+  issueCounts: { missingThumbnails: number; missingMetadata: number; missingOriginals: number };
   duplicateCount: number;
-  storageGuidance: {
-    originals: string;
-    thumbnails: string;
-    database: string;
-  };
+  storageGuidance: { originals: string; thumbnails: string; database: string };
   checkedAt: number;
-  issues: HealthIssue[];
+  issues?: HealthIssue[];
 }
 
-export interface LibrarySummaryExport {
-  exportedAt: string;
-  exclusions: string;
-  librarySummary: LibraryHealth;
-  assets: MediaAssetView[];
-}
-
-export interface AssetRecordBundle {
-  asset: Asset;
-  exif?: ExifData;
-  videoMetadata?: VideoMetadata;
-  favorite: boolean;
-  tags: string[];
+export interface FilterState {
+  type: '' | 'image' | 'video';
+  favorite: '' | 'true' | 'false';
+  tag: string;
+  camera: string;
+  dateFrom: string;
+  dateTo: string;
+  hasThumbnail: '' | 'true' | 'false';
+  hasMetadata: '' | 'true' | 'false';
+  groupBy: GroupMode;
 }

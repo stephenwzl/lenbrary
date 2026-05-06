@@ -35,9 +35,9 @@ The MVP architecture now adds a library layer on top of the existing asset servi
 - **Logging and errors**: Logs request and processing behavior and returns normalized errors for common failure cases.
 - **Endpoint documentation**: Serves generated documentation for available service endpoints.
 - **Deployment**: Provides container and compose definitions with local volumes for data, uploads, and temporary files.
-- **Library surface**: Provides MVP media-library endpoints and a lightweight browser UI for import, browsing, filtering, details, organization, health, and export.
-- **Static UI state**: Keeps view state in the browser for filters, pagination, selected asset, import queue, feedback messages, and responsive layout. No persistent client database or separate frontend package is introduced.
-- **Liquid glass presentation**: Uses CSS-only translucent panels, backdrop blur, highlight borders, semantic status colors, focus rings, and responsive stacking inside the existing static UI.
+- **Library surface**: Provides MVP media-library endpoints and a React browser UI for import, browsing, filtering, details, organization, health, and export.
+- **React UI state**: Keeps view state in React for filters, grouping mode, selected assets, selected detail, import queue, batch actions, feedback messages, health issues, and responsive layout. No persistent client database or separate frontend service is introduced.
+- **Liquid glass presentation**: Uses CSS translucent panels, backdrop blur, highlight borders, semantic status colors, focus rings, and responsive stacking inside the React UI.
 
 ## Asset Lifecycle
 
@@ -66,6 +66,9 @@ The MVP architecture now adds a library layer on top of the existing asset servi
 - **Migration record**: Versioned record of applied schema changes.
 - **Organization marker**: User-created favorite state or tag attached to an asset.
 - **Import event**: User-visible record of accepted, duplicate, unsupported, failed, or processing-pending import outcomes.
+- **Batch action result**: Per-asset success/failure summary for multi-select tag, favorite, and delete actions.
+- **Browse group**: Timeline, tag, or camera grouping over the current library filters.
+- **Health issue**: Actionable confidence finding for missing originals, missing thumbnails, missing metadata, duplicate import events, or export boundaries.
 - **Library summary export**: Readable asset catalog and metadata index that excludes original media files.
 - **Client view state**: Ephemeral browser state for active filters, loaded result pages, selected detail, import queue rows, and feedback messages.
 
@@ -129,7 +132,7 @@ For the confirmed personal-product positioning, this local persistence model is 
 - Did supported media types or metadata extraction behavior change?
 - Did backup, restore, retention, or compliance become a product promise?
 - Did the personal-product roadmap add search, tagging, albums, or backup/export expectations that require new architecture?
-- Did frontend changes keep `src/ui/app.js` as the served behavior and avoid introducing a separate framework without evidence?
+- Did frontend changes keep React under `src/ui/react/`, built by Vite into `dist/ui`, and served by the existing Express process?
 
 ## Maintenance Guidance
 

@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "lib": ["ES2022"],
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "moduleResolution": "bundler",
     "outDir": "./dist",
@@ -19,7 +19,8 @@
     "noFallthroughCasesInSwitch": true,
     "allowImportingTsExtensions": false,
     "noEmit": false,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "jsx": "react-jsx"
   },
   "include": [
     "src/**/*"
@@ -27,7 +28,6 @@
   "exclude": [
     "node_modules",
     "dist",
-    "src/ui",
     "**/*.test.ts",
     "**/*.spec.ts"
   ]
