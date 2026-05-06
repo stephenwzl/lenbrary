@@ -8,41 +8,103 @@
   </head>
   <body>
     <main class="app">
-      <section class="toolbar">
+      <section class="toolbar glass-panel" aria-labelledby="appTitle">
         <div>
-          <h1>Lenbrary</h1>
-          <p>Personal media library</p>
+          <p class="eyebrow">Personal media library</p>
+          <h1 id="appTitle">Lenbrary</h1>
+          <p>Browse, import, organize, inspect, and export your private photo and media catalog.</p>
         </div>
-        <div class="actions">
+        <div class="actions" aria-label="Library actions">
           <button id="statusButton" type="button">Status</button>
           <button id="exportButton" type="button">Export index</button>
         </div>
       </section>
 
-      <section class="import-panel">
-        <input id="fileInput" type="file" multiple accept="image/*,video/*">
-        <button id="importButton" type="button">Import</button>
-        <div id="importResults" class="results"></div>
+      <section id="feedbackRegion" class="feedback-region" aria-live="polite" aria-atomic="true"></section>
+
+      <section class="import-panel glass-panel" aria-labelledby="importTitle">
+        <div class="panel-heading">
+          <div>
+            <h2 id="importTitle">Import</h2>
+            <p>Track each selected file from queue to final outcome.</p>
+          </div>
+          <div id="importSummary" class="summary-strip" aria-live="polite"></div>
+        </div>
+        <div class="import-controls">
+          <input id="fileInput" type="file" multiple accept="image/*,video/*">
+          <button id="importButton" type="button">Import selected</button>
+        </div>
+        <div id="importResults" class="import-queue" role="status" aria-live="polite"></div>
       </section>
 
-      <section class="filters">
-        <select id="typeFilter">
-          <option value="">All media</option>
-          <option value="image">Images</option>
-          <option value="video">Videos</option>
-        </select>
-        <input id="cameraFilter" type="search" placeholder="Camera">
-        <input id="tagFilter" type="search" placeholder="Tag">
-        <label><input id="favoriteFilter" type="checkbox"> Favorites</label>
-        <button id="refreshButton" type="button">Refresh</button>
+      <section class="filters glass-panel" aria-labelledby="filtersTitle">
+        <div class="panel-heading">
+          <div>
+            <h2 id="filtersTitle">Library</h2>
+            <p id="resultSummary">No results loaded yet.</p>
+          </div>
+          <div class="actions">
+            <button id="refreshButton" type="button">Refresh</button>
+            <button id="clearFiltersButton" type="button">Clear filters</button>
+          </div>
+        </div>
+        <div class="filter-grid">
+          <label>Media
+            <select id="typeFilter">
+              <option value="">All media</option>
+              <option value="image">Images</option>
+              <option value="video">Videos</option>
+            </select>
+          </label>
+          <label>Favorite
+            <select id="favoriteFilter">
+              <option value="">Any</option>
+              <option value="true">Favorites</option>
+              <option value="false">Not favorite</option>
+            </select>
+          </label>
+          <label>Camera
+            <input id="cameraFilter" type="search" placeholder="Camera text">
+          </label>
+          <label>Tag
+            <input id="tagFilter" type="search" placeholder="Tag">
+          </label>
+          <label>From
+            <input id="dateFromFilter" type="date">
+          </label>
+          <label>To
+            <input id="dateToFilter" type="date">
+          </label>
+          <label>Thumbnail
+            <select id="thumbnailFilter">
+              <option value="">Any</option>
+              <option value="true">Available</option>
+              <option value="false">Missing</option>
+            </select>
+          </label>
+          <label>Metadata
+            <select id="metadataFilter">
+              <option value="">Any</option>
+              <option value="true">Available</option>
+              <option value="false">Missing</option>
+            </select>
+          </label>
+        </div>
+        <div id="activeFilters" class="active-filters" aria-label="Active filters"></div>
       </section>
 
       <section class="workspace">
-        <div id="assetGrid" class="asset-grid"></div>
-        <aside id="detailPanel" class="detail-panel"></aside>
+        <div class="results-column glass-panel" aria-labelledby="resultsTitle">
+          <div class="panel-heading compact">
+            <h2 id="resultsTitle">Assets</h2>
+            <button id="loadMoreButton" type="button" hidden>Load more</button>
+          </div>
+          <div id="assetGrid" class="asset-grid" aria-live="polite"></div>
+        </div>
+        <aside id="detailPanel" class="detail-panel glass-panel" aria-live="polite" aria-label="Asset detail"></aside>
       </section>
 
-      <section id="statusPanel" class="status-panel" hidden></section>
+      <section id="statusPanel" class="status-panel glass-panel" aria-live="polite" hidden></section>
     </main>
     <script type="module" src="/app.js"></script>
   </body>

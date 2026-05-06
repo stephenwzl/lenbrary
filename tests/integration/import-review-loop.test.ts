@@ -21,4 +21,26 @@ describe('import review loop outcome mapping', () => {
       thumbnailAvailable: true,
     });
   });
+
+  it('keeps failed and unsupported outcomes distinguishable from successful imports', () => {
+    const accepted = LibraryService.getInstance().getImportResultFromUpload('ok.png', {
+      data: {
+        id: 2,
+        file_type: 'image',
+        thumbnail_path: '/tmp/ok.jpg',
+        exif: { asset_id: 2 },
+      },
+    }, 'accepted');
+    const duplicate = LibraryService.getInstance().getImportResultFromUpload('ok-copy.png', {
+      data: {
+        id: 2,
+        file_type: 'image',
+      },
+    }, 'duplicate');
+
+    expect(accepted.status).toBe('accepted');
+    expect(duplicate.status).toBe('duplicate');
+    expect(duplicate.assetId).toBe(2);
+    expect(duplicate.message).toBe('Already in library');
+  });
 });
