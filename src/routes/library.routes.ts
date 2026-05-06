@@ -1,11 +1,8 @@
 import { Router, Request, Response, NextFunction } from 'express';
-import { existsSync, readFileSync, unlinkSync } from 'node:fs';
-import { fileTypeFromBuffer } from 'file-type';
 import { upload } from '../middleware/upload';
 import { BadRequestError, InternalServerError, NotFoundError } from '../middleware/error-handler';
 import DatabaseService from '../services/database.service';
 import LibraryService from '../services/library.service';
-import logger from '../middleware/logger';
 import type { ImportResult } from '../types/library.types';
 
 const router = Router();
@@ -29,6 +26,19 @@ interface MulterFile {
  */
 router.get('/assets', (req: Request, res: Response): void => {
   const filters = libraryService.parseFilters(req.query);
+  if (filters.groupBy && filters.groupBy !== 'flat') {
+    const groups = libraryService.groupAssets(filters);
+    res.json({
+      success: true,
+      data: groups,
+      pagination: {
+        limit: filters.limit,
+        offset: filters.offset,
+        hasMore: false,
+      },
+    });
+    return;
+  }
   const result = libraryService.listAssets(filters);
   res.json({
     success: true,
@@ -38,6 +48,42 @@ router.get('/assets', (req: Request, res: Response): void => {
       offset: filters.offset,
       hasMore: result.hasMore,
     },
+  });
+});
+
+router.put('/assets/batch/tags', (req: Request, res: Response): void => {
+  if (!Array.isArray(req.body?.assetIds)) {
+    throw new BadRequestError('assetIds must be an array');
+  }
+  if (!Array.isArray(req.body?.tags)) {
+    throw new BadRequestError('tags must be an array');
+  }
+  res.json({
+    success: true,
+    data: libraryService.batchTags(req.body.assetIds.map(Number), req.body.tags.map(String)),
+  });
+});
+
+router.put('/assets/batch/favorite', (req: Request, res: Response): void => {
+  if (!Array.isArray(req.body?.assetIds)) {
+    throw new BadRequestError('assetIds must be an array');
+  }
+  res.json({
+    success: true,
+    data: libraryService.batchFavorite(req.body.assetIds.map(Number), Boolean(req.body?.favorite)),
+  });
+});
+
+router.delete('/assets/batch', (req: Request, res: Response): void => {
+  if (!Array.isArray(req.body?.assetIds)) {
+    throw new BadRequestError('assetIds must be an array');
+  }
+  if (req.body?.confirmed !== true) {
+    throw new BadRequestError('Batch delete requires confirmation');
+  }
+  res.json({
+    success: true,
+    data: libraryService.batchDelete(req.body.assetIds.map(Number)),
   });
 });
 
@@ -92,45 +138,10 @@ router.post('/import', upload.array('files'), asyncRoute(async (req: Request, re
 
   const results: ImportResult[] = [];
   for (const file of files) {
-    try {
-      const buffer = readFileSync(file.path);
-      const detected = await fileTypeFromBuffer(buffer);
-      if (!detected || (!detected.mime.startsWith('image/') && !detected.mime.startsWith('video/'))) {
-        results.push({
-          inputName: file.originalname,
-          status: 'unsupported',
-          message: detected ? `Unsupported file type: ${detected.mime}` : 'Could not detect file type',
-          metadataAvailable: false,
-          thumbnailAvailable: false,
-        });
-      } else {
-        results.push({
-          inputName: file.originalname,
-          status: 'processing-pending',
-          message: 'Use single upload processing for this file',
-          mediaType: detected.mime.startsWith('image/') ? 'image' : 'video',
-          metadataAvailable: false,
-          thumbnailAvailable: false,
-        });
-      }
-    } catch (error) {
-      logger.warn('[LibraryController] Import file failed', { error, filename: file.originalname });
-      results.push({
-        inputName: file.originalname,
-        status: 'failed',
-        message: 'Failed to inspect uploaded file',
-        metadataAvailable: false,
-        thumbnailAvailable: false,
-      });
-    } finally {
-      if (existsSync(file.path)) {
-        unlinkSync(file.path);
-      }
-    }
+    results.push(await libraryService.importUploadedFile(file));
   }
 
-  results.forEach(result => databaseService.recordImportEvent(result));
-  res.json({ success: true, data: { results } });
+  res.json({ success: true, data: { results, summary: libraryService.createImportSummary(results) } });
 }));
 
 /**

@@ -16,6 +16,7 @@
 - Node.js >= 22.18.0
 - TypeScript >= 5.x
 - Express 4.x
+- React 19 + Vite（MVP 媒体库前端）
 - better-sqlite3
 - Sharp (图片处理)
 - Multer (文件上传)
@@ -45,7 +46,13 @@ npm run dev
 http://localhost:3000/
 ```
 
-当前 MVP 界面提供个人媒体库 review loop：多文件导入、逐文件导入队列、导入结果提示、视觉浏览、媒体/相机/收藏/标签/日期/缩略图/元数据筛选、可清除的活跃筛选、增量加载、分组资产详情、原文件访问、收藏和标签编辑、删除确认、库状态和摘要导出。页面使用 liquid glass 风格：半透明玻璃面板、背景模糊、高光边、柔和阴影和清晰焦点状态，同时保持个人媒体管理工具需要的信息密度和可读性。摘要导出是资产清单和元数据索引，不包含原始媒体文件。
+当前 MVP 界面由 React 构建，提供个人媒体库 review loop：真实批量导入、逐文件导入队列、accepted/duplicate/unsupported/failed 结果提示、视觉浏览、媒体/相机/收藏/标签/日期/缩略图/元数据筛选、分组浏览、资产详情、原文件访问、收藏和标签编辑、批量标签/收藏/删除、库状态和摘要导出。页面使用 liquid glass 风格：半透明玻璃面板、背景模糊、高光边、柔和阴影和清晰焦点状态，同时保持个人媒体管理工具需要的信息密度和可读性。摘要导出是资产清单和元数据索引，不包含原始媒体文件。
+
+React 开发模式：
+
+```bash
+npm run dev:ui
+```
 
 ### 生产构建
 
@@ -157,8 +164,12 @@ DELETE /api/assets/:id
 ```http
 GET /api/library/assets
 GET /api/library/assets/:id
+POST /api/library/import
 PUT /api/library/assets/:id/favorite
 PUT /api/library/assets/:id/tags
+PUT /api/library/assets/batch/tags
+PUT /api/library/assets/batch/favorite
+DELETE /api/library/assets/batch
 GET /api/library/health
 GET /api/library/export
 ```
@@ -214,6 +225,7 @@ npm run typecheck
 
 ```bash
 npm test
+npm run test:acceptance
 ```
 
 ### 清理构建文件

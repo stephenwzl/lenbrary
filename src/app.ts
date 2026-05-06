@@ -37,7 +37,9 @@ export function createApp(): Express {
     },
   }));
 
-  const uiPath = join(process.cwd(), 'src/ui');
+  const uiPath = process.env.NODE_ENV !== 'test' && existsSync(join(process.cwd(), 'dist/ui'))
+    ? join(process.cwd(), 'dist/ui')
+    : join(process.cwd(), 'src/ui');
   if (existsSync(uiPath)) {
     app.use('/', express.static(uiPath));
   }

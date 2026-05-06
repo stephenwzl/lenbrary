@@ -68,6 +68,12 @@ The second increment adds clearer mixed-import outcomes and per-file queue feedb
 
 ## Scope Boundaries
 
+## MVP Hardening Update
+
+The current MVP direction now prioritizes reliability over additional surface area. The first hardening target is real browser import: a mixed set of personal media should produce visible per-file outcomes without generic crashes. The React interface is the operational surface for this workflow, including import queue review, batch organization, grouped browsing, health guidance, and export boundary messaging.
+
+This update strengthens the personal enthusiast positioning. Batch tags/favorites/deletion and timeline/tag/camera grouping are in scope because they reduce day-to-day collection cleanup friction. The product still avoids public sharing, multi-user accounts, hosted collaboration, professional DAM approval workflows, and full backup/restore promises.
+
 ### In Scope Today
 
 - Image and video ingestion.
