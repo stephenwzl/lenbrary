@@ -29,7 +29,3 @@ uploads/
 *.db-shm
 *.db-wal
 data/
-
-# Test
-*.test.ts
-*.spec.ts

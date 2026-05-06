@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import { fileTypeFromBuffer } from 'file-type';
 import { v4 as uuidv4 } from 'uuid';
 import type { Asset, ExifData, VideoMetadata } from '../types/assets.types';
@@ -18,6 +18,12 @@ const databaseService = DatabaseService.getInstance();
 const storageService = StorageService.getInstance();
 const imageService = ImageService.getInstance();
 const videoService = VideoService.getInstance();
+
+function asyncRoute(handler: (req: Request, res: Response) => Promise<void>) {
+  return (req: Request, res: Response, next: NextFunction): void => {
+    void handler(req, res).catch(next);
+  };
+}
 
 interface MulterFile {
   fieldname: string;
@@ -104,7 +110,7 @@ interface MulterFile {
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post('/upload', upload.single('file'), async (req: Request, res: Response): Promise<void> => {
+router.post('/upload', upload.single('file'), asyncRoute(async (req: Request, res: Response): Promise<void> => {
   logger.debug('[AssetController] Upload endpoint called');
   const file = req.file as MulterFile | undefined;
 
@@ -359,6 +365,9 @@ router.post('/upload', upload.single('file'), async (req: Request, res: Response
     }
     res.status(201).json(responseBody);
   } catch (error) {
+    if (error instanceof BadRequestError || error instanceof NotFoundError || error instanceof InternalServerError) {
+      throw error;
+    }
     logger.error('[AssetController] Upload error - Details:', {
       error: error as any,
       errorMessage: (error as any).message,
@@ -371,7 +380,7 @@ router.post('/upload', upload.single('file'), async (req: Request, res: Response
     }
     throw new InternalServerError('Failed to upload file');
   }
-});
+}));
 
 /**
  * @swagger

@@ -38,6 +38,6 @@ async function initializeDatabase(): Promise<void> {
   }
 }
 
-void initializeDatabase();
+export const databaseReady = initializeDatabase();
 
 export default db;

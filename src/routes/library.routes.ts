@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import { existsSync, readFileSync, unlinkSync } from 'node:fs';
 import { fileTypeFromBuffer } from 'file-type';
 import { upload } from '../middleware/upload';
@@ -11,6 +11,12 @@ import type { ImportResult } from '../types/library.types';
 const router = Router();
 const databaseService = DatabaseService.getInstance();
 const libraryService = LibraryService.getInstance();
+
+function asyncRoute(handler: (req: Request, res: Response) => Promise<void>) {
+  return (req: Request, res: Response, next: NextFunction): void => {
+    void handler(req, res).catch(next);
+  };
+}
 
 interface MulterFile {
   originalname: string;
@@ -78,7 +84,7 @@ router.put('/assets/:id/tags', (req: Request, res: Response): void => {
 /**
  * Returns per-file import outcomes for a batch selected in the MVP UI.
  */
-router.post('/import', upload.array('files'), async (req: Request, res: Response): Promise<void> => {
+router.post('/import', upload.array('files'), asyncRoute(async (req: Request, res: Response): Promise<void> => {
   const files = req.files as MulterFile[] | undefined;
   if (!files || files.length === 0) {
     throw new BadRequestError('No files uploaded');
@@ -125,7 +131,7 @@ router.post('/import', upload.array('files'), async (req: Request, res: Response
 
   results.forEach(result => databaseService.recordImportEvent(result));
   res.json({ success: true, data: { results } });
-});
+}));
 
 /**
  * Read-only personal library health summary.
